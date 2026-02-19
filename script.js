@@ -242,100 +242,190 @@ function animateParticles() {
     animationId = requestAnimationFrame(animateParticles);
 }
 
-// MINI-GAME REMOVED
-
 // =========================================
-// OUTRO & EXTRAS
+// MINI-GAME: VOID RUNNER 2.0
 // =========================================
-function showOutroFromHub() {
-    hubContainer.classList.add('hidden');
-    outroPage.classList.remove('hidden');
-    fireConfetti();
-}
+let gameActive = false;
+let gameTime = 15.0;
+let playerLane = 1; // 0: Left, 1: Center, 2: Right
+let obstacles = [];
+let gameLoopId, spawnTimer, countdownTimer;
+const LANE_POSITIONS = ['16%', '50%', '84%']; // CSS Left %
 
-// CONFETTI (Simple Canvas Implementation)
-function fireConfetti() {
-    const cCanvas = document.getElementById('confetti-canvas');
-    if (!cCanvas) return;
-    const cCtx = cCanvas.getContext('2d');
-    cCanvas.width = window.innerWidth;
-    cCanvas.height = window.innerHeight;
+function startRunnerGame() {
+    introPage.classList.add('hidden');
+    introPage.classList.remove('intro-active');
+    minigamePage.classList.remove('hidden');
 
-    let pieces = [];
-    for (let i = 0; i < 100; i++) {
-        pieces.push({
-            x: Math.random() * cCanvas.width,
-            y: Math.random() * cCanvas.height - cCanvas.height,
-            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-            size: Math.random() * 10 + 5,
-            speed: Math.random() * 5 + 2
-        });
-    }
+    // Reset State
+    gameActive = true;
+    gameTime = 15.0;
+    playerLane = 1;
+    obstacles = [];
+    document.getElementById('obstacles-container').innerHTML = '';
+    updatePlayerPos();
 
-    function drawConfetti() {
-        cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
-        pieces.forEach(p => {
-            p.y += p.speed;
-            if (p.y > cCanvas.height) p.y = -20;
-            cCtx.fillStyle = p.color;
-            cCtx.fillRect(p.x, p.y, p.size, p.size);
-        });
-        if (!outroPage.classList.contains('hidden')) requestAnimationFrame(drawConfetti);
-    }
-    drawConfetti();
-}
+    // Start Loops
+    gameLoopId = requestAnimationFrame(gameLoop);
+    spawnTimer = setInterval(spawnObstacle, 800); // Faster spawn for excitement
+    countdownTimer = setInterval(() => {
+        gameTime -= 0.1;
+        document.getElementById('game-timer').innerText = gameTime.toFixed(2);
+        if (gameTime <= 0) winGame();
+    }, 100);
 
-// SOUND TOGGLE
-soundBtn.addEventListener('click', () => {
-    isSoundOn = !isSoundOn;
-    soundBtn.innerText = isSoundOn ? '🔊' : '🔇';
-
+    // Audio
     const audio = document.getElementById('bg-music');
-    if (audio) {
-        if (isSoundOn) {
-            audio.volume = 0.5;
-            audio.play().catch(e => console.log("Audio play failed:", e));
-        } else {
-            audio.pause();
+    if (audio && isSoundOn) {
+        audio.play().catch(e => console.log("Audio play failed:", e));
+    }
+}
+
+// Controls
+function handleLeftInput() {
+    if (!gameActive) return;
+    if (playerLane > 0) playerLane--;
+    updatePlayerPos();
+}
+
+function handleRightInput() {
+    if (!gameActive) return;
+    if (playerLane < 2) playerLane++;
+    updatePlayerPos();
+}
+
+function updatePlayerPos() {
+    const p = document.getElementById('player');
+    if (p) p.style.left = LANE_POSITIONS[playerLane];
+}
+
+function spawnObstacle() {
+    if (!gameActive) return;
+    const lane = Math.floor(Math.random() * 3);
+    const obs = document.createElement('div');
+    obs.className = 'obstacle';
+    obs.style.left = LANE_POSITIONS[lane];
+    obs.style.top = '-100px'; // Start higher
+    document.getElementById('obstacles-container').appendChild(obs);
+
+    // Speed increases as time decreases
+    const speed = 5 + (15 - gameTime) * 0.5;
+    obstacles.push({ el: obs, lane: lane, top: -100, speed: speed });
+}
+
+function gameLoop() {
+    if (!gameActive) return;
+
+    const player = document.getElementById('player');
+    const playerRect = player ? player.getBoundingClientRect() : null;
+
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let obs = obstacles[i];
+        obs.top += obs.speed;
+        obs.el.style.top = obs.top + 'px';
+
+        // Collision Logic (Bounding Box)
+        if (playerRect) {
+            const obsRect = obs.el.getBoundingClientRect();
+            // Shrink hitboxes slightly for fairness
+            const pRect = {
+                left: playerRect.left + 10, right: playerRect.right - 10,
+                top: playerRect.top + 10, bottom: playerRect.bottom - 10
+            };
+            const oRect = {
+                left: obsRect.left + 5, right: obsRect.right - 5,
+                top: obsRect.top + 5, bottom: obsRect.bottom - 5
+            };
+
+            const overlap = !(pRect.right < oRect.left ||
+                pRect.left > oRect.right ||
+                pRect.bottom < oRect.top ||
+                pRect.top > oRect.bottom);
+
+            if (overlap) {
+                // Hit Penalty
+                gameTime = Math.min(gameTime + 3.0, 15.0); // +3s penalty
+                document.body.style.backgroundColor = '#500000';
+                setTimeout(() => document.body.style.backgroundColor = '', 100);
+
+                obs.el.remove();
+                obstacles.splice(i, 1);
+                continue;
+            }
+        }
+
+        // Cleanup
+        if (obs.top > window.innerHeight) {
+            obs.el.remove();
+            obstacles.splice(i, 1);
         }
     }
-});
+    gameLoopId = requestAnimationFrame(gameLoop);
+}
 
-// INITIALIZATION
+function winGame() {
+    gameActive = false;
+    clearInterval(spawnTimer);
+    clearInterval(countdownTimer);
+    cancelAnimationFrame(gameLoopId);
+
+    const title = document.querySelector('.runner-title');
+    title.innerText = "SYSTEM SECURED";
+    title.style.color = '#00ffcc';
+    title.style.textShadow = '0 0 20px #00ffcc';
+
+    setTimeout(() => {
+        minigamePage.classList.add('hidden');
+        hubContainer.classList.remove('hidden');
+
+        // Reset game UI for next time
+        setTimeout(() => {
+            title.innerText = "VOID RUNNER";
+            title.style.color = '#ff00de';
+            title.style.textShadow = '0 0 10px #ff00de';
+        }, 1000);
+    }, 1500);
+}
+
+// Global Listener Setup
 document.addEventListener('DOMContentLoaded', () => {
     initHub();
     resizeCanvas();
 
-    // DIRECT ACCESS - GAME REMOVED
-    startBtn.addEventListener('click', () => {
-        introPage.classList.add('hidden');
-        introPage.classList.remove('intro-active');
-        hubContainer.classList.remove('hidden');
-        // Intro music handling if needed
-        const audio = document.getElementById('bg-music');
-        if (audio && isSoundOn) {
-            audio.play().catch(e => console.log("Audio play failed:", e));
-        }
-    });
+    // Re-bind Start Button
+    startBtn.addEventListener('click', startRunnerGame);
+
     toOutroBtn.addEventListener('click', showOutroFromHub);
     dimBackBtn.addEventListener('click', exitDimension);
-    restartBtn.addEventListener('click', () => location.reload()); // Simple reboot
-
+    restartBtn.addEventListener('click', () => location.reload());
     dimImgWrapper.addEventListener('click', triggerGlitch);
 
-    // Global Event Listeners for Toys
-    window.addEventListener('deviceorientation', handleParallax);
-    window.addEventListener('mousemove', handleParallax);
+    // Game Controls
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') handleLeftInput();
+        if (e.key === 'ArrowRight') handleRightInput();
+    });
+
+    // Touch Zones
+    const leftZone = document.getElementById('zone-left');
+    const rightZone = document.getElementById('zone-right');
+
+    if (leftZone) leftZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleLeftInput(); });
+    if (rightZone) rightZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleRightInput(); });
 
     // Easter Egg
     const hubTitle = document.querySelector('.hub-title');
     let clicks = 0;
-    hubTitle.addEventListener('click', () => {
-        clicks++;
-        if (clicks === 5) {
-            alert('SYSTEM HACKED: \n(¬_¬) (O_O) (>_<)\nStay curious!');
-        }
-    });
+    if (hubTitle) {
+        hubTitle.addEventListener('click', () => {
+            clicks++;
+            if (clicks === 5) alert('SYSTEM HACKED: \n(¬_¬) (O_O) (>_<)\nStay curious!');
+        });
+    }
+
+    // Parallax
+    window.addEventListener('deviceorientation', handleParallax);
+    window.addEventListener('mousemove', handleParallax);
 });
 
 window.addEventListener('resize', resizeCanvas);
