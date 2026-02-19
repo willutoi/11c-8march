@@ -242,6 +242,177 @@ function animateParticles() {
     animationId = requestAnimationFrame(animateParticles);
 }
 
+// PARALLAX
+function handleParallax(e) {
+    const layer = document.getElementById('parallax-bg');
+    if (!layer) return;
+
+    let x = 0, y = 0;
+
+    // Check if it's device orientation or mouse
+    if (e.type === 'deviceorientation') {
+        x = e.gamma * 2; // Tilt Left/Right
+        y = e.beta * 2;  // Tilt Front/Back
+    } else if (e.type === 'mousemove') {
+        x = (e.clientX - window.innerWidth / 2) / 20;
+        y = (e.clientY - window.innerHeight / 2) / 20;
+    }
+
+    layer.style.transform = `translate(${x}px, ${y}px)`;
+
+    // Also shift visual layers slightly
+    document.querySelectorAll('.visual-layer').forEach((l, i) => {
+        const factor = (i + 1) * 0.5;
+        l.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
+    });
+}
+
+// GLITCH TRIGGER
+function triggerGlitch() {
+    document.body.classList.add('glitch-active');
+    dimImgWrapper.style.transform = `scale(1.1) skew(${Math.random() * 10 - 5}deg)`;
+    setTimeout(() => {
+        document.body.classList.remove('glitch-active');
+        dimImgWrapper.style.transform = 'none';
+    }, 200);
+}
+
+// =========================================
+// HUB AND NAVIGATION
+// =========================================
+function initHub() {
+    // Core Particles
+    const coreContainer = document.getElementById('core-particles');
+    if (coreContainer) {
+        coreContainer.innerHTML = '';
+        for (let i = 0; i < 50; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            // Random sphere points
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos((Math.random() * 2) - 1);
+            const r = 90;
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+            p.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+            coreContainer.appendChild(p);
+        }
+    }
+
+    // Core Click -> Marzhan
+    const coreWrapper = document.querySelector('.core-wrapper');
+    const marzhanIndex = dimensions.findIndex(d => d.id === 'marzhan');
+
+    if (coreWrapper) {
+        const newCore = coreWrapper.cloneNode(true);
+        coreWrapper.parentNode.replaceChild(newCore, coreWrapper);
+        newCore.addEventListener('click', () => {
+            if (marzhanIndex !== -1) enterDimension(marzhanIndex);
+        });
+    }
+
+    // Orbit Glyphs
+    const orbitContainer = document.getElementById('orbit-system');
+    if (orbitContainer) {
+        orbitContainer.innerHTML = '';
+        const orbitDims = dimensions.filter(d => d.id !== 'marzhan');
+        const angleStep = 360 / orbitDims.length;
+
+        orbitDims.forEach((dim, i) => {
+            const originalIndex = dimensions.findIndex(d => d.id === dim.id);
+            const wrapper = document.createElement('div');
+            wrapper.className = 'glyph-wrapper';
+
+            const angle = i * angleStep;
+            const radius = 250;
+            wrapper.style.transform = `rotateZ(${angle}deg) translate(${radius}px) rotateZ(-${angle}deg)`;
+
+            const glyph = document.createElement('div');
+            glyph.className = 'glyph';
+            glyph.innerHTML = dim.glyphShape;
+
+            const nameTag = document.createElement('div');
+            nameTag.className = 'glyph-name-hover';
+            nameTag.innerText = dim.title;
+
+            glyph.appendChild(nameTag);
+            wrapper.appendChild(glyph);
+            orbitContainer.appendChild(wrapper);
+
+            if (visitedDimensions.has(dim.id)) wrapper.classList.add('visited');
+
+            wrapper.addEventListener('click', () => {
+                enterDimension(originalIndex);
+            });
+        });
+    }
+}
+
+function enterDimension(index) {
+    const data = dimensions[index];
+    visitedDimensions.add(data.id);
+    updateHubState();
+
+    // Visual Transition
+    document.body.classList.add('warp-active');
+    setTimeout(() => hubContainer.classList.add('hidden'), 200);
+
+    setTimeout(() => {
+        dimView.className = 'dimension-view active ' + data.styleClass;
+        dimImg.classList.remove('loaded');
+        dimImg.style.display = 'none';
+
+        // Update Text
+        dimName.innerText = data.name;
+        dimTitle.innerText = data.title;
+        dimQuote.innerText = `"${data.quote}"`;
+        dimDesc.innerText = data.desc;
+        dimSecret.innerText = data.secret;
+
+        // Load Image
+        dimImg.src = `img/${data.id}.jpg`;
+        dimImg.onload = () => {
+            dimImg.style.display = 'block';
+            setTimeout(() => dimImg.classList.add('loaded'), 10);
+        };
+        dimImg.onerror = () => { dimImg.style.display = 'none'; };
+
+        // Start Visual Toys
+        resizeCanvas();
+        initParticles(data.particleColor || '#ffffff');
+        animateParticles();
+
+        // Enable Parallax
+        document.body.classList.remove('warp-active');
+    }, 800);
+}
+
+function updateHubState() {
+    const orbitContainer = document.getElementById('orbit-system');
+    if (!orbitContainer) return;
+    const wrappers = orbitContainer.children;
+    const orbitDims = dimensions.filter(d => d.id !== 'marzhan');
+
+    for (let i = 0; i < wrappers.length; i++) {
+        if (visitedDimensions.has(orbitDims[i].id)) {
+            wrappers[i].classList.add('visited');
+        }
+    }
+}
+
+function exitDimension() {
+    dimView.classList.remove('active');
+    // Stop expensive animations
+    cancelAnimationFrame(animationId);
+
+    setTimeout(() => {
+        dimView.className = 'dimension-view';
+        dimView.classList.add('hidden');
+        hubContainer.classList.remove('hidden');
+    }, 1000);
+}
+
 // =========================================
 // MINI-GAME: VOID RUNNER 2.0
 // =========================================
