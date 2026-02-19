@@ -8,10 +8,10 @@ const dimensions = [
         title: 'Пространство Устойчивости',
         styleClass: 'style-akberen',
         quote: 'Сила не в том, чтобы не падать, а в том, чтобы крепко стоять.',
-        desc: 'Пространство абсолютного равновесия. Хаос разбивается о монолитную волю.',
+        desc: 'Это пространство абсолютного равновесия. Здесь каждый шаг выверен, а каждое решение взвешено. Хаос внешнего мира разбивается о монолитную волю.',
+        stats: ['Воля: 100%', 'Спокойствие: ∞', 'Стержень: Титан'],
         secret: 'Опора для всех, кто рядом.',
-        glyphShape: '▮',
-        particleColor: '#00ff41'
+        glyphShape: '▮'
     },
     {
         id: 'dalima',
@@ -19,10 +19,10 @@ const dimensions = [
         title: 'Пространство Импульса',
         styleClass: 'style-dalima',
         quote: 'Одно мгновение способно изменить реальность.',
-        desc: 'Мир чистой энергии. Идеи превращаются в действия быстрее света.',
+        desc: 'Мир чистой кинестической энергии. Здесь идеи превращаются в действия быстрее скорости света. Нет сомнений, есть только вектор движения.',
+        stats: ['Скорость: Мах 10', 'Реакция: Мгновенно', 'Огонь: Яркий'],
         secret: 'Зажигает звезды своим драйвом.',
-        glyphShape: '▲',
-        particleColor: '#ff4500'
+        glyphShape: '▲'
     },
     {
         id: 'talima',
@@ -30,10 +30,10 @@ const dimensions = [
         title: 'Пространство Креативности',
         styleClass: 'style-talima',
         quote: 'Там, где нет границ, рождается искусство.',
-        desc: 'Здесь облака принимают любые формы, а каждый момент — искусство.',
-        secret: 'Превращает обычное в шедевр.',
-        glyphShape: '☁',
-        particleColor: '#8ec5fc'
+        desc: 'Здесь облака принимают любые формы. Её Instagram — это отдельный вид искусства, где каждый пост как картина. Пространство бесконечного вдохновения.',
+        stats: ['Фантазия: Без границ', 'Insta: Эстетика', 'Вдохновение: 24/7'],
+        secret: 'Превращает обычные фото в шедевры.',
+        glyphShape: '☁'
     },
     {
         id: 'aigerim',
@@ -41,10 +41,10 @@ const dimensions = [
         title: 'Пространство Стабильности',
         styleClass: 'style-aigerim',
         quote: 'Улыбка — это тоже порядок.',
-        desc: 'Архитектурный шедевр позитива. Стабильно классное настроение.',
+        desc: 'Архитектурный шедевр позитива. В этом пространстве всегда солнечно и весело. Стабильно классное настроение, на которое можно положиться в любой шторм.',
+        stats: ['Настроение: 100%', 'Смех: Заразительный', 'Надежность: Титан'],
         secret: 'Всегда найдет повод для радости.',
-        glyphShape: '■',
-        particleColor: '#2c3e50'
+        glyphShape: '■'
     },
     {
         id: 'nazerke',
@@ -52,10 +52,10 @@ const dimensions = [
         title: 'Пространство Контроля',
         styleClass: 'style-nazerke',
         quote: 'Точность — вежливость королей.',
-        desc: 'Центр управления полетами. Ни одна деталь не ускользнет.',
-        secret: 'Видит структуру во всем.',
-        glyphShape: '◈',
-        particleColor: '#00ff00'
+        desc: 'Центр управления полетами и ракетками. Здесь отслеживаются все переменные, а реакция быстрее, чем в настольном теннисе. Ни один мяч не упадет мимо.',
+        stats: ['Ping-Pong: PRO', 'Контроль: Полный', 'Реакция: Молния'],
+        secret: 'Обыграет тебя левой рукой.',
+        glyphShape: '◈'
     },
     {
         id: 'mariyam',
@@ -63,10 +63,10 @@ const dimensions = [
         title: 'Пространство Движения',
         styleClass: 'style-mariyam',
         quote: 'Игра продолжается, пока мяч в игре.',
-        desc: 'Вибрация, ритм, спорт. Энергия бьет ключом.',
+        desc: 'Вибрация, ритм, спорт. Это пространство живет в темпе баскетбольного матча. Энергия бьет ключом, и каждый бросок — точно в цель.',
+        stats: ['Баскетбол: MVP', 'Энергия: Высокая', 'Вайб: Спортивный'],
         secret: 'Королева трёхочковых бросков.',
-        glyphShape: '●',
-        particleColor: '#e0aaff'
+        glyphShape: '●'
     },
     {
         id: 'raushan',
@@ -74,10 +74,10 @@ const dimensions = [
         title: 'Пространство Разума',
         styleClass: 'style-raushan',
         quote: 'Истина сияет ярче солнца.',
-        desc: 'Кристально чистое пространство интеллекта.',
-        secret: 'Знает ответы на незаданные вопросы.',
-        glyphShape: '◆',
-        particleColor: '#ffffff'
+        desc: 'Кристально чистое пространство интеллекта. Здесь свет знания преломляется через призму мудрости, освещая самые темные уголки.',
+        stats: ['IQ: Зашкаливает', 'Мудрость: Древняя', 'Свет: Ослепительный'],
+        secret: 'Знает ответы на вопросы, которые мы еще не задали.',
+        glyphShape: '◆'
     },
     {
         id: 'enlik',
@@ -85,21 +85,21 @@ const dimensions = [
         title: 'Пространство Надёжности',
         styleClass: 'style-enlik',
         quote: 'Слово, твердое как камень.',
-        desc: 'Золотой стандарт доверия. Ценности вечны, как благородный металл.',
+        desc: 'Золотой стандарт доверия. Это пространство, где обещания всегда выполняются, а ценности вечны, как благородный металл.',
+        stats: ['Верность: Золотая', 'Ценность: Бесценно', 'Стиль: Luxury'],
         secret: 'Сокровище, которое мы бережем.',
-        glyphShape: '♛',
-        particleColor: '#d4af37'
+        glyphShape: '♛'
     },
     {
         id: 'ayaulym',
         name: 'Ayaulym',
-        title: 'Пространство Интеллекта',
+        title: 'Пространство SAT Monsters',
         styleClass: 'style-ayaulym',
         quote: 'Знание — единственная истинная суперсила.',
-        desc: 'Зона повышенной ментальной активности. GOD MODE включен.',
-        secret: 'Решает проблемы взглядом.',
-        glyphShape: '☀',
-        particleColor: '#ff3333'
+        desc: 'Зона повышенной академической опасности. Здесь задачи решаются взглядом, а дедлайны боятся приближаться. Уровень интеллекта: GOD MODE.',
+        stats: ['Math: 800', 'English: 800', 'Сон: 0%'],
+        secret: 'Осторожно: может случайно решить все ваши проблемы.',
+        glyphShape: '☀'
     },
     {
         id: 'inabat',
@@ -107,10 +107,10 @@ const dimensions = [
         title: 'Пространство Настроения',
         styleClass: 'style-inabat',
         quote: 'Цвета души меняют мир вокруг.',
-        desc: 'Холст, на котором рисуются эмоции. Мир в ярких тонах.',
+        desc: 'Холст, на котором каждый день рисуется новая картина. Здесь эмоции обретают цвет, а каждое слово становится мазком кисти.',
+        stats: ['Палитра: Яркая', 'Эмпатия: Тонкая', 'Искусство: Живое'],
         secret: 'Делает наш мир цветным.',
-        glyphShape: '🖌',
-        particleColor: '#ff9a9e'
+        glyphShape: '🖌'
     },
     {
         id: 'marzhan',
@@ -118,19 +118,18 @@ const dimensions = [
         title: 'Пространство Авроры',
         styleClass: 'style-marzhan',
         quote: 'Твой свет озаряет путь другим.',
-        desc: 'Северное сияние в темном небе. Магия и спокойствие.',
-        secret: 'Cердце всей системы.',
-        glyphShape: '〰',
-        particleColor: '#94d2bd'
+        desc: 'Северное сияние в темном небе. Это пространство притягивает своей таинственностью и спокойствием. Магия, которую чувствуешь кожей.',
+        stats: ['Атмосфера: Магическая', 'Уют: Космический', 'Свет: Внутренний'],
+        secret: 'Cердце нашего класса.',
+        glyphShape: '〰'
     }
 ];
 
 // STATE
 let visitedDimensions = new Set();
-let isSoundOn = false;
 
 // =========================================
-// UI ELEMENTS
+// APP STATE & NAVIGATION
 // =========================================
 const introPage = document.getElementById('intro-page');
 const minigamePage = document.getElementById('minigame-page');
@@ -141,16 +140,16 @@ const outroPage = document.getElementById('outro-page');
 const startBtn = document.getElementById('start-btn');
 const toOutroBtn = document.getElementById('to-outro-btn');
 const restartBtn = document.getElementById('restart-btn');
-const soundBtn = document.getElementById('sound-btn');
 
 const dimName = document.getElementById('dim-name');
 const dimTitle = document.getElementById('dim-title');
 const dimQuote = document.getElementById('dim-quote');
 const dimDesc = document.getElementById('dim-desc');
+const dimStats = document.getElementById('dim-stats');
 const dimSecret = document.getElementById('dim-secret');
 const dimBackBtn = document.getElementById('back-btn');
 const dimImg = document.getElementById('dim-img');
-const dimImgWrapper = document.getElementById('dim-img-wrapper');
+
 
 // =========================================
 // PARTICLES & VISUAL TOYS
@@ -214,8 +213,10 @@ class Particle {
 }
 
 function initParticles(color) {
+    currentParticleColor = color;
+    particles = [];
     // OPTIMIZED PARTICLES for Mobile
-    for (let i = 0; i < 20; i++) { // Reduced from 50
+    for (let i = 0; i < 20; i++) {
         particles.push(new Particle());
     }
 }
@@ -229,7 +230,7 @@ window.addEventListener('mousemove', (e) => {
 window.addEventListener('touchstart', (e) => {
     mouse.x = e.touches[0].clientX;
     mouse.y = e.touches[0].clientY;
-}, { passive: true }); // Passive for scroll perf
+}, { passive: true });
 
 function animateParticles() {
     if (!dimView.classList.contains('active')) return;
@@ -241,6 +242,7 @@ function animateParticles() {
     });
     animationId = requestAnimationFrame(animateParticles);
 }
+
 
 // PARALLAX
 function handleParallax(e) {
@@ -278,142 +280,6 @@ function triggerGlitch() {
 }
 
 // =========================================
-// HUB AND NAVIGATION
-// =========================================
-function initHub() {
-    // Core Particles
-    const coreContainer = document.getElementById('core-particles');
-    if (coreContainer) {
-        coreContainer.innerHTML = '';
-        for (let i = 0; i < 50; i++) {
-            const p = document.createElement('div');
-            p.className = 'particle';
-            // Random sphere points
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos((Math.random() * 2) - 1);
-            const r = 90;
-            const x = r * Math.sin(phi) * Math.cos(theta);
-            const y = r * Math.sin(phi) * Math.sin(theta);
-            const z = r * Math.cos(phi);
-            p.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
-            coreContainer.appendChild(p);
-        }
-    }
-
-    // Core Click -> Marzhan
-    const coreWrapper = document.querySelector('.core-wrapper');
-    const marzhanIndex = dimensions.findIndex(d => d.id === 'marzhan');
-
-    if (coreWrapper) {
-        const newCore = coreWrapper.cloneNode(true);
-        coreWrapper.parentNode.replaceChild(newCore, coreWrapper);
-        newCore.addEventListener('click', () => {
-            if (marzhanIndex !== -1) enterDimension(marzhanIndex);
-        });
-    }
-
-    // Orbit Glyphs
-    const orbitContainer = document.getElementById('orbit-system');
-    if (orbitContainer) {
-        orbitContainer.innerHTML = '';
-        const orbitDims = dimensions.filter(d => d.id !== 'marzhan');
-        const angleStep = 360 / orbitDims.length;
-
-        orbitDims.forEach((dim, i) => {
-            const originalIndex = dimensions.findIndex(d => d.id === dim.id);
-            const wrapper = document.createElement('div');
-            wrapper.className = 'glyph-wrapper';
-
-            const angle = i * angleStep;
-            const radius = 250;
-            wrapper.style.transform = `rotateZ(${angle}deg) translate(${radius}px) rotateZ(-${angle}deg)`;
-
-            const glyph = document.createElement('div');
-            glyph.className = 'glyph';
-            glyph.innerHTML = dim.glyphShape;
-
-            const nameTag = document.createElement('div');
-            nameTag.className = 'glyph-name-hover';
-            nameTag.innerText = dim.title;
-
-            glyph.appendChild(nameTag);
-            wrapper.appendChild(glyph);
-            orbitContainer.appendChild(wrapper);
-
-            if (visitedDimensions.has(dim.id)) wrapper.classList.add('visited');
-
-            wrapper.addEventListener('click', () => {
-                enterDimension(originalIndex);
-            });
-        });
-    }
-}
-
-function enterDimension(index) {
-    const data = dimensions[index];
-    visitedDimensions.add(data.id);
-    updateHubState();
-
-    // Visual Transition
-    document.body.classList.add('warp-active');
-    setTimeout(() => hubContainer.classList.add('hidden'), 200);
-
-    setTimeout(() => {
-        dimView.className = 'dimension-view active ' + data.styleClass;
-        dimImg.classList.remove('loaded');
-        dimImg.style.display = 'none';
-
-        // Update Text
-        dimName.innerText = data.name;
-        dimTitle.innerText = data.title;
-        dimQuote.innerText = `"${data.quote}"`;
-        dimDesc.innerText = data.desc;
-        dimSecret.innerText = data.secret;
-
-        // Load Image
-        dimImg.src = `img/${data.id}.jpg`;
-        dimImg.onload = () => {
-            dimImg.style.display = 'block';
-            setTimeout(() => dimImg.classList.add('loaded'), 10);
-        };
-        dimImg.onerror = () => { dimImg.style.display = 'none'; };
-
-        // Start Visual Toys
-        resizeCanvas();
-        initParticles(data.particleColor || '#ffffff');
-        animateParticles();
-
-        // Enable Parallax
-        document.body.classList.remove('warp-active');
-    }, 800);
-}
-
-function updateHubState() {
-    const orbitContainer = document.getElementById('orbit-system');
-    if (!orbitContainer) return;
-    const wrappers = orbitContainer.children;
-    const orbitDims = dimensions.filter(d => d.id !== 'marzhan');
-
-    for (let i = 0; i < wrappers.length; i++) {
-        if (visitedDimensions.has(orbitDims[i].id)) {
-            wrappers[i].classList.add('visited');
-        }
-    }
-}
-
-function exitDimension() {
-    dimView.classList.remove('active');
-    // Stop expensive animations
-    cancelAnimationFrame(animationId);
-
-    setTimeout(() => {
-        dimView.className = 'dimension-view';
-        dimView.classList.add('hidden');
-        hubContainer.classList.remove('hidden');
-    }, 1000);
-}
-
-// =========================================
 // MINI-GAME: VOID RUNNER 2.0
 // =========================================
 let gameActive = false;
@@ -438,7 +304,7 @@ function startRunnerGame() {
 
     // Start Loops
     gameLoopId = requestAnimationFrame(gameLoop);
-    spawnTimer = setInterval(spawnObstacle, 800); // Faster spawn for excitement
+    spawnTimer = setInterval(spawnObstacle, 800);
     countdownTimer = setInterval(() => {
         gameTime -= 0.1;
         document.getElementById('game-timer').innerText = gameTime.toFixed(2);
@@ -476,10 +342,10 @@ function spawnObstacle() {
     const obs = document.createElement('div');
     obs.className = 'obstacle';
     obs.style.left = LANE_POSITIONS[lane];
-    obs.style.top = '-100px'; // Start higher
+    obs.style.top = '-100px';
     document.getElementById('obstacles-container').appendChild(obs);
 
-    // Speed increases as time decreases
+    // Speed logic
     const speed = 5 + (15 - gameTime) * 0.5;
     obstacles.push({ el: obs, lane: lane, top: -100, speed: speed });
 }
@@ -498,7 +364,7 @@ function gameLoop() {
         // Collision Logic (Bounding Box)
         if (playerRect) {
             const obsRect = obs.el.getBoundingClientRect();
-            // Shrink hitboxes slightly for fairness
+            // Shrink hitboxes
             const pRect = {
                 left: playerRect.left + 10, right: playerRect.right - 10,
                 top: playerRect.top + 10, bottom: playerRect.bottom - 10
@@ -515,7 +381,7 @@ function gameLoop() {
 
             if (overlap) {
                 // Hit Penalty
-                gameTime = Math.min(gameTime + 3.0, 15.0); // +3s penalty
+                gameTime = Math.min(gameTime + 3.0, 15.0);
                 document.body.style.backgroundColor = '#500000';
                 setTimeout(() => document.body.style.backgroundColor = '', 100);
 
@@ -548,8 +414,7 @@ function winGame() {
     setTimeout(() => {
         minigamePage.classList.add('hidden');
         hubContainer.classList.remove('hidden');
-
-        // Reset game UI for next time
+        // Reset title
         setTimeout(() => {
             title.innerText = "VOID RUNNER";
             title.style.color = '#ff00de';
@@ -558,45 +423,235 @@ function winGame() {
     }, 1500);
 }
 
-// Global Listener Setup
-document.addEventListener('DOMContentLoaded', () => {
-    initHub();
-    resizeCanvas();
+function showOutroFromHub() {
+    hubContainer.classList.add('fade-out');
+    setTimeout(() => {
+        hubContainer.classList.add('hidden');
+        outroPage.classList.remove('hidden');
+        // Fire confetti if needed, but the loop needs to be here or triggered
+        // We can just rely on CSS or add confetti call if it exists
+    }, 1000);
 
-    // Re-bind Start Button
-    startBtn.addEventListener('click', startRunnerGame);
 
-    toOutroBtn.addEventListener('click', showOutroFromHub);
-    dimBackBtn.addEventListener('click', exitDimension);
-    restartBtn.addEventListener('click', () => location.reload());
-    dimImgWrapper.addEventListener('click', triggerGlitch);
+    // =========================================
+    // CORE & PARTICLES
+    // =========================================
+    function initHub() {
+        const coreContainer = document.getElementById('core-particles');
+        const particleCount = 50;
 
-    // Game Controls
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') handleLeftInput();
-        if (e.key === 'ArrowRight') handleRightInput();
-    });
+        if (coreContainer) {
+            coreContainer.innerHTML = '';
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
 
-    // Touch Zones
-    const leftZone = document.getElementById('zone-left');
-    const rightZone = document.getElementById('zone-right');
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+                const r = 90;
 
-    if (leftZone) leftZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleLeftInput(); });
-    if (rightZone) rightZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleRightInput(); });
+                const x = r * Math.sin(phi) * Math.cos(theta);
+                const y = r * Math.sin(phi) * Math.sin(theta);
+                const z = r * Math.cos(phi);
 
-    // Easter Egg
-    const hubTitle = document.querySelector('.hub-title');
-    let clicks = 0;
-    if (hubTitle) {
-        hubTitle.addEventListener('click', () => {
-            clicks++;
-            if (clicks === 5) alert('SYSTEM HACKED: \n(¬_¬) (O_O) (>_<)\nStay curious!');
-        });
+                p.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+                coreContainer.appendChild(p);
+            }
+        }
+
+        // MAKE CORE CLICKABLE -> Goes to Marzhan
+        const marzhanIndex = dimensions.findIndex(d => d.id === 'marzhan');
+        const coreWrapper = document.querySelector('.core-wrapper');
+
+        if (coreWrapper) {
+            const newCore = coreWrapper.cloneNode(true);
+            coreWrapper.parentNode.replaceChild(newCore, coreWrapper);
+
+            newCore.addEventListener('click', () => {
+                if (marzhanIndex !== -1) enterDimension(marzhanIndex);
+            });
+        }
+
+        // Generate Orbit Glyphs
+        const orbitContainer = document.getElementById('orbit-system');
+        if (orbitContainer) {
+            orbitContainer.innerHTML = '';
+
+            const orbitDimensions = dimensions.filter(d => d.id !== 'marzhan');
+            const angleStep = 360 / orbitDimensions.length;
+
+            orbitDimensions.forEach((dim, i) => {
+                const originalIndex = dimensions.findIndex(d => d.id === dim.id);
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'glyph-wrapper';
+
+                const angle = i * angleStep;
+                const radius = 250;
+
+                wrapper.style.transform = `rotateZ(${angle}deg) translate(${radius}px) rotateZ(-${angle}deg)`;
+
+                const glyph = document.createElement('div');
+                glyph.className = 'glyph';
+                glyph.innerHTML = dim.glyphShape;
+
+                const nameTag = document.createElement('div');
+                nameTag.className = 'glyph-name-hover';
+                nameTag.innerText = dim.title;
+
+                glyph.appendChild(nameTag);
+                wrapper.appendChild(glyph);
+                orbitContainer.appendChild(wrapper);
+
+                // Check visited state on init
+                if (visitedDimensions.has(dim.id)) {
+                    wrapper.classList.add('visited');
+                }
+
+                wrapper.addEventListener('click', () => {
+                    enterDimension(originalIndex);
+                });
+            });
+        }
     }
 
-    // Parallax
-    window.addEventListener('deviceorientation', handleParallax);
-    window.addEventListener('mousemove', handleParallax);
-});
+    function updateHubState() {
+        // Helper to update classes without full re-render if deemed expensive, 
+        // but re-init is safer for consistency or simple class toggle.
+        // For now, let's just toggle classes on existing DOM if possible, 
+        // or rely on the fact that initHub runs once? 
+        // Wait, initHub runs only on DOMContentLoaded. 
+        // We need to update existing DOM nodes.
 
-window.addEventListener('resize', resizeCanvas);
+        const orbitContainer = document.getElementById('orbit-system');
+        if (!orbitContainer) return;
+
+        const wrappers = orbitContainer.children;
+        // Iterate and check against IDs. Since we build them in order filtering 'marzhan' out:
+        const orbitDims = dimensions.filter(d => d.id !== 'marzhan');
+
+        for (let i = 0; i < wrappers.length; i++) {
+            const dimId = orbitDims[i].id;
+            if (visitedDimensions.has(dimId)) {
+                wrappers[i].classList.add('visited');
+            }
+        }
+    }
+
+    function enterDimension(index) {
+        const data = dimensions[index];
+
+        // Mark as visited
+        visitedDimensions.add(data.id);
+        updateHubState(); // Refresh Hub UI to show visited status
+
+        document.body.classList.add('warp-active');
+
+        setTimeout(() => {
+            hubContainer.classList.add('fade-out');
+        }, 200);
+
+        setTimeout(() => {
+            dimView.className = 'dimension-view';
+            dimImg.classList.remove('loaded');
+            dimImg.style.display = 'none';
+
+            dimView.classList.add('active');
+            dimView.classList.add(data.styleClass);
+
+            dimName.innerText = data.name;
+            dimTitle.innerText = data.title;
+            dimQuote.innerText = `"${data.quote}"`;
+
+            if (dimDesc) dimDesc.innerText = data.desc;
+            if (dimSecret) dimSecret.innerText = data.secret;
+
+            if (dimStats) {
+                dimStats.innerHTML = '';
+                if (data.stats) {
+                    data.stats.forEach((stat, i) => {
+                        const span = document.createElement('span');
+                        span.className = 'stat-item';
+                        span.style.animationDelay = `${0.5 + (i * 0.1)}s`;
+                        span.innerText = stat;
+                        dimStats.appendChild(span);
+                    });
+                }
+            }
+
+            const imagePath = `img/${data.id}.jpg`;
+            dimImg.src = imagePath;
+
+            dimImg.onload = () => {
+                dimImg.style.display = 'block';
+                setTimeout(() => dimImg.classList.add('loaded'), 10);
+            };
+
+            dimImg.onerror = () => {
+                console.log(`No image found for ${data.id}, keeping placeholder.`);
+                dimImg.style.display = 'none';
+            };
+
+            setTimeout(() => {
+                document.body.classList.remove('warp-active');
+            }, 500);
+
+        }, 800);
+    }
+
+    function exitDimension() {
+        dimView.classList.remove('active');
+
+        // Wait for full transition (1s) before hiding/resetting
+        setTimeout(() => {
+            dimView.className = 'dimension-view'; // Hard reset removes all style classes
+            dimView.classList.add('hidden');
+            hubContainer.classList.remove('fade-out');
+
+            // Clear heavy elements to free memory
+            dimStats.innerHTML = '';
+        }, 1000); // Matches CSS transition: opacity 1s
+    }
+
+    // =========================================
+    // LISTENERS & START
+    // =========================================
+    document.addEventListener('DOMContentLoaded', () => {
+        initHub();
+
+        // Changed flow: Start -> Runner Game -> Hub
+        startBtn.addEventListener('click', startRunnerGame);
+
+        toOutroBtn.addEventListener('click', showOutroFromHub);
+        dimBackBtn.addEventListener('click', exitDimension);
+        restartBtn.addEventListener('click', () => location.reload());
+
+        // GAME CONTROLS (Keyboard)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') handleLeftInput();
+            if (e.key === 'ArrowRight') handleRightInput();
+        });
+
+        // GAME CONTROLS (Touch Zones)
+        const leftZone = document.getElementById('zone-left');
+        const rightZone = document.getElementById('zone-right');
+
+        // Prevent default to stop scrolling/zooming while playing
+        if (leftZone) leftZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleLeftInput(); }, { passive: false });
+        if (rightZone) rightZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleRightInput(); }, { passive: false });
+
+        // Easter Egg
+        const hubTitle = document.querySelector('.hub-title');
+        let clicks = 0;
+        if (hubTitle) {
+            hubTitle.addEventListener('click', () => {
+                clicks++;
+                if (clicks === 5) alert('SYSTEM HACKED: \n(¬_¬) (O_O) (>_<)\nStay curious!');
+            });
+        }
+
+        // Parallax
+        window.addEventListener('deviceorientation', handleParallax);
+        window.addEventListener('mousemove', handleParallax);
+    });
+}
