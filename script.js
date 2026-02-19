@@ -428,230 +428,236 @@ function showOutroFromHub() {
     setTimeout(() => {
         hubContainer.classList.add('hidden');
         outroPage.classList.remove('hidden');
-        // Fire confetti if needed, but the loop needs to be here or triggered
-        // We can just rely on CSS or add confetti call if it exists
     }, 1000);
-
-
-    // =========================================
-    // CORE & PARTICLES
-    // =========================================
-    function initHub() {
-        const coreContainer = document.getElementById('core-particles');
-        const particleCount = 50;
-
-        if (coreContainer) {
-            coreContainer.innerHTML = '';
-            for (let i = 0; i < particleCount; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.acos((Math.random() * 2) - 1);
-                const r = 90;
-
-                const x = r * Math.sin(phi) * Math.cos(theta);
-                const y = r * Math.sin(phi) * Math.sin(theta);
-                const z = r * Math.cos(phi);
-
-                p.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
-                coreContainer.appendChild(p);
-            }
-        }
-
-        // MAKE CORE CLICKABLE -> Goes to Marzhan
-        const marzhanIndex = dimensions.findIndex(d => d.id === 'marzhan');
-        const coreWrapper = document.querySelector('.core-wrapper');
-
-        if (coreWrapper) {
-            const newCore = coreWrapper.cloneNode(true);
-            coreWrapper.parentNode.replaceChild(newCore, coreWrapper);
-
-            newCore.addEventListener('click', () => {
-                if (marzhanIndex !== -1) enterDimension(marzhanIndex);
-            });
-        }
-
-        // Generate Orbit Glyphs
-        const orbitContainer = document.getElementById('orbit-system');
-        if (orbitContainer) {
-            orbitContainer.innerHTML = '';
-
-            const orbitDimensions = dimensions.filter(d => d.id !== 'marzhan');
-            const angleStep = 360 / orbitDimensions.length;
-
-            orbitDimensions.forEach((dim, i) => {
-                const originalIndex = dimensions.findIndex(d => d.id === dim.id);
-
-                const wrapper = document.createElement('div');
-                wrapper.className = 'glyph-wrapper';
-
-                const angle = i * angleStep;
-                const radius = 250;
-
-                wrapper.style.transform = `rotateZ(${angle}deg) translate(${radius}px) rotateZ(-${angle}deg)`;
-
-                const glyph = document.createElement('div');
-                glyph.className = 'glyph';
-                glyph.innerHTML = dim.glyphShape;
-
-                const nameTag = document.createElement('div');
-                nameTag.className = 'glyph-name-hover';
-                nameTag.innerText = dim.title;
-
-                glyph.appendChild(nameTag);
-                wrapper.appendChild(glyph);
-                orbitContainer.appendChild(wrapper);
-
-                // Check visited state on init
-                if (visitedDimensions.has(dim.id)) {
-                    wrapper.classList.add('visited');
-                }
-
-                wrapper.addEventListener('click', () => {
-                    enterDimension(originalIndex);
-                });
-            });
-        }
-    }
-
-    function updateHubState() {
-        // Helper to update classes without full re-render if deemed expensive, 
-        // but re-init is safer for consistency or simple class toggle.
-        // For now, let's just toggle classes on existing DOM if possible, 
-        // or rely on the fact that initHub runs once? 
-        // Wait, initHub runs only on DOMContentLoaded. 
-        // We need to update existing DOM nodes.
-
-        const orbitContainer = document.getElementById('orbit-system');
-        if (!orbitContainer) return;
-
-        const wrappers = orbitContainer.children;
-        // Iterate and check against IDs. Since we build them in order filtering 'marzhan' out:
-        const orbitDims = dimensions.filter(d => d.id !== 'marzhan');
-
-        for (let i = 0; i < wrappers.length; i++) {
-            const dimId = orbitDims[i].id;
-            if (visitedDimensions.has(dimId)) {
-                wrappers[i].classList.add('visited');
-            }
-        }
-    }
-
-    function enterDimension(index) {
-        const data = dimensions[index];
-
-        // Mark as visited
-        visitedDimensions.add(data.id);
-        updateHubState(); // Refresh Hub UI to show visited status
-
-        document.body.classList.add('warp-active');
-
-        setTimeout(() => {
-            hubContainer.classList.add('fade-out');
-        }, 200);
-
-        setTimeout(() => {
-            dimView.className = 'dimension-view';
-            dimImg.classList.remove('loaded');
-            dimImg.style.display = 'none';
-
-            dimView.classList.add('active');
-            dimView.classList.add(data.styleClass);
-
-            dimName.innerText = data.name;
-            dimTitle.innerText = data.title;
-            dimQuote.innerText = `"${data.quote}"`;
-
-            if (dimDesc) dimDesc.innerText = data.desc;
-            if (dimSecret) dimSecret.innerText = data.secret;
-
-            if (dimStats) {
-                dimStats.innerHTML = '';
-                if (data.stats) {
-                    data.stats.forEach((stat, i) => {
-                        const span = document.createElement('span');
-                        span.className = 'stat-item';
-                        span.style.animationDelay = `${0.5 + (i * 0.1)}s`;
-                        span.innerText = stat;
-                        dimStats.appendChild(span);
-                    });
-                }
-            }
-
-            const imagePath = `img/${data.id}.jpg`;
-            dimImg.src = imagePath;
-
-            dimImg.onload = () => {
-                dimImg.style.display = 'block';
-                setTimeout(() => dimImg.classList.add('loaded'), 10);
-            };
-
-            dimImg.onerror = () => {
-                console.log(`No image found for ${data.id}, keeping placeholder.`);
-                dimImg.style.display = 'none';
-            };
-
-            setTimeout(() => {
-                document.body.classList.remove('warp-active');
-            }, 500);
-
-        }, 800);
-    }
-
-    function exitDimension() {
-        dimView.classList.remove('active');
-
-        // Wait for full transition (1s) before hiding/resetting
-        setTimeout(() => {
-            dimView.className = 'dimension-view'; // Hard reset removes all style classes
-            dimView.classList.add('hidden');
-            hubContainer.classList.remove('fade-out');
-
-            // Clear heavy elements to free memory
-            dimStats.innerHTML = '';
-        }, 1000); // Matches CSS transition: opacity 1s
-    }
-
-    // =========================================
-    // LISTENERS & START
-    // =========================================
-    document.addEventListener('DOMContentLoaded', () => {
-        initHub();
-
-        // Changed flow: Start -> Runner Game -> Hub
-        startBtn.addEventListener('click', startRunnerGame);
-
-        toOutroBtn.addEventListener('click', showOutroFromHub);
-        dimBackBtn.addEventListener('click', exitDimension);
-        restartBtn.addEventListener('click', () => location.reload());
-
-        // GAME CONTROLS (Keyboard)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') handleLeftInput();
-            if (e.key === 'ArrowRight') handleRightInput();
-        });
-
-        // GAME CONTROLS (Touch Zones)
-        const leftZone = document.getElementById('zone-left');
-        const rightZone = document.getElementById('zone-right');
-
-        // Prevent default to stop scrolling/zooming while playing
-        if (leftZone) leftZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleLeftInput(); }, { passive: false });
-        if (rightZone) rightZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleRightInput(); }, { passive: false });
-
-        // Easter Egg
-        const hubTitle = document.querySelector('.hub-title');
-        let clicks = 0;
-        if (hubTitle) {
-            hubTitle.addEventListener('click', () => {
-                clicks++;
-                if (clicks === 5) alert('SYSTEM HACKED: \n(¬_¬) (O_O) (>_<)\nStay curious!');
-            });
-        }
-
-        // Parallax
-        window.addEventListener('deviceorientation', handleParallax);
-        window.addEventListener('mousemove', handleParallax);
-    });
 }
+
+// =========================================
+// CORE & PARTICLES
+// =========================================
+function initHub() {
+    const coreContainer = document.getElementById('core-particles');
+    const particleCount = 50;
+
+    if (coreContainer) {
+        coreContainer.innerHTML = '';
+        for (let i = 0; i < particleCount; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos((Math.random() * 2) - 1);
+            const r = 90;
+
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+
+            p.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+            coreContainer.appendChild(p);
+        }
+    }
+
+    // MAKE CORE CLICKABLE -> Goes to Marzhan
+    const marzhanIndex = dimensions.findIndex(d => d.id === 'marzhan');
+    const coreWrapper = document.querySelector('.core-wrapper');
+
+    if (coreWrapper) {
+        // Remove old listener by cloning
+        const newCore = coreWrapper.cloneNode(true);
+        coreWrapper.parentNode.replaceChild(newCore, coreWrapper);
+
+        newCore.addEventListener('click', () => {
+            if (marzhanIndex !== -1) enterDimension(marzhanIndex);
+        });
+    }
+
+    // Generate Orbit Glyphs
+    const orbitContainer = document.getElementById('orbit-system');
+    if (orbitContainer) {
+        orbitContainer.innerHTML = '';
+
+        const orbitDimensions = dimensions.filter(d => d.id !== 'marzhan');
+        const angleStep = 360 / orbitDimensions.length;
+
+        // RESPONSIVE RADIUS
+        const minDim = Math.min(window.innerWidth, window.innerHeight);
+        // On mobile (<600px), use 40% of screen width, max 160px
+        // On desktop, use standard 250px
+        let radius = 250;
+        if (minDim < 600) {
+            radius = minDim * 0.4;
+        }
+
+        orbitDimensions.forEach((dim, i) => {
+            const originalIndex = dimensions.findIndex(d => d.id === dim.id);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'glyph-wrapper';
+
+            const angle = i * angleStep;
+
+            wrapper.style.transform = `rotateZ(${angle}deg) translate(${radius}px) rotateZ(-${angle}deg)`;
+
+            const glyph = document.createElement('div');
+            glyph.className = 'glyph';
+            glyph.innerHTML = dim.glyphShape;
+
+            const nameTag = document.createElement('div');
+            nameTag.className = 'glyph-name-hover';
+            nameTag.innerText = dim.title;
+
+            glyph.appendChild(nameTag);
+            wrapper.appendChild(glyph);
+            orbitContainer.appendChild(wrapper);
+
+            // Check visited state on init
+            if (visitedDimensions.has(dim.id)) {
+                wrapper.classList.add('visited');
+            }
+
+            wrapper.addEventListener('click', () => {
+                enterDimension(originalIndex);
+            });
+        });
+    }
+}
+
+function updateHubState() {
+    // Helper to update classes without full re-render if deemed expensive, 
+    // but re-init is safer for consistency or simple class toggle.
+    // For now, let's just toggle classes on existing DOM if possible, 
+    // or rely on the fact that initHub runs once? 
+    // Wait, initHub runs only on DOMContentLoaded. 
+    // We need to update existing DOM nodes.
+
+    const orbitContainer = document.getElementById('orbit-system');
+    if (!orbitContainer) return;
+
+    const wrappers = orbitContainer.children;
+    // Iterate and check against IDs. Since we build them in order filtering 'marzhan' out:
+    const orbitDims = dimensions.filter(d => d.id !== 'marzhan');
+
+    for (let i = 0; i < wrappers.length; i++) {
+        const dimId = orbitDims[i].id;
+        if (visitedDimensions.has(dimId)) {
+            wrappers[i].classList.add('visited');
+        }
+    }
+}
+
+function enterDimension(index) {
+    const data = dimensions[index];
+
+    // Mark as visited
+    visitedDimensions.add(data.id);
+    updateHubState(); // Refresh Hub UI to show visited status
+
+    document.body.classList.add('warp-active');
+
+    setTimeout(() => {
+        hubContainer.classList.add('fade-out');
+    }, 200);
+
+    setTimeout(() => {
+        dimView.className = 'dimension-view';
+        dimImg.classList.remove('loaded');
+        dimImg.style.display = 'none';
+
+        dimView.classList.add('active');
+        dimView.classList.add(data.styleClass);
+
+        dimName.innerText = data.name;
+        dimTitle.innerText = data.title;
+        dimQuote.innerText = `"${data.quote}"`;
+
+        if (dimDesc) dimDesc.innerText = data.desc;
+        if (dimSecret) dimSecret.innerText = data.secret;
+
+        if (dimStats) {
+            dimStats.innerHTML = '';
+            if (data.stats) {
+                data.stats.forEach((stat, i) => {
+                    const span = document.createElement('span');
+                    span.className = 'stat-item';
+                    span.style.animationDelay = `${0.5 + (i * 0.1)}s`;
+                    span.innerText = stat;
+                    dimStats.appendChild(span);
+                });
+            }
+        }
+
+        const imagePath = `img/${data.id}.jpg`;
+        dimImg.src = imagePath;
+
+        dimImg.onload = () => {
+            dimImg.style.display = 'block';
+            setTimeout(() => dimImg.classList.add('loaded'), 10);
+        };
+
+        dimImg.onerror = () => {
+            console.log(`No image found for ${data.id}, keeping placeholder.`);
+            dimImg.style.display = 'none';
+        };
+
+        setTimeout(() => {
+            document.body.classList.remove('warp-active');
+        }, 500);
+
+    }, 800);
+}
+
+function exitDimension() {
+    dimView.classList.remove('active');
+
+    // Wait for full transition (1s) before hiding/resetting
+    setTimeout(() => {
+        dimView.className = 'dimension-view'; // Hard reset removes all style classes
+        dimView.classList.add('hidden');
+        hubContainer.classList.remove('fade-out');
+
+        // Clear heavy elements to free memory
+        dimStats.innerHTML = '';
+    }, 1000); // Matches CSS transition: opacity 1s
+}
+
+// =========================================
+// LISTENERS & START
+// =========================================
+document.addEventListener('DOMContentLoaded', () => {
+    initHub();
+
+    // Changed flow: Start -> Runner Game -> Hub
+    startBtn.addEventListener('click', startRunnerGame);
+
+    toOutroBtn.addEventListener('click', showOutroFromHub);
+    dimBackBtn.addEventListener('click', exitDimension);
+    restartBtn.addEventListener('click', () => location.reload());
+
+    // GAME CONTROLS (Keyboard)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') handleLeftInput();
+        if (e.key === 'ArrowRight') handleRightInput();
+    });
+
+    // GAME CONTROLS (Touch Zones)
+    const leftZone = document.getElementById('zone-left');
+    const rightZone = document.getElementById('zone-right');
+
+    // Prevent default to stop scrolling/zooming while playing
+    if (leftZone) leftZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleLeftInput(); }, { passive: false });
+    if (rightZone) rightZone.addEventListener('touchstart', (e) => { e.preventDefault(); handleRightInput(); }, { passive: false });
+
+    // Easter Egg
+    const hubTitle = document.querySelector('.hub-title');
+    let clicks = 0;
+    if (hubTitle) {
+        hubTitle.addEventListener('click', () => {
+            clicks++;
+            if (clicks === 5) alert('SYSTEM HACKED: \n(¬_¬) (O_O) (>_<)\nStay curious!');
+        });
+    }
+
+    // Parallax
+    window.addEventListener('deviceorientation', handleParallax);
+    window.addEventListener('mousemove', handleParallax);
+});
