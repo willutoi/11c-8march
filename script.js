@@ -214,9 +214,8 @@ class Particle {
 }
 
 function initParticles(color) {
-    currentParticleColor = color;
-    particles = [];
-    for (let i = 0; i < 50; i++) {
+    // OPTIMIZED PARTICLES for Mobile
+    for (let i = 0; i < 20; i++) { // Reduced from 50
         particles.push(new Particle());
     }
 }
@@ -230,7 +229,7 @@ window.addEventListener('mousemove', (e) => {
 window.addEventListener('touchstart', (e) => {
     mouse.x = e.touches[0].clientX;
     mouse.y = e.touches[0].clientY;
-});
+}, { passive: true }); // Passive for scroll perf
 
 function animateParticles() {
     if (!dimView.classList.contains('active')) return;
@@ -243,257 +242,43 @@ function animateParticles() {
     animationId = requestAnimationFrame(animateParticles);
 }
 
-// PARALLAX
-function handleParallax(e) {
-    const layer = document.getElementById('parallax-bg');
-    if (!layer) return;
-
-    let x = 0, y = 0;
-
-    // Check if it's device orientation or mouse
-    if (e.type === 'deviceorientation') {
-        x = e.gamma * 2; // Tilt Left/Right
-        y = e.beta * 2;  // Tilt Front/Back
-    } else if (e.type === 'mousemove') {
-        x = (e.clientX - window.innerWidth / 2) / 20;
-        y = (e.clientY - window.innerHeight / 2) / 20;
-    }
-
-    layer.style.transform = `translate(${x}px, ${y}px)`;
-
-    // Also shift visual layers slightly
-    document.querySelectorAll('.visual-layer').forEach((l, i) => {
-        const factor = (i + 1) * 0.5;
-        l.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
-    });
-}
-
-// GLITCH TRIGGER
-function triggerGlitch() {
-    document.body.classList.add('glitch-active');
-    dimImgWrapper.style.transform = `scale(1.1) skew(${Math.random() * 10 - 5}deg)`;
-    setTimeout(() => {
-        document.body.classList.remove('glitch-active');
-        dimImgWrapper.style.transform = 'none';
-    }, 200);
-}
-
-// =========================================
-// HUB AND NAVIGATION
-// =========================================
-function initHub() {
-    // Core Particles
-    const coreContainer = document.getElementById('core-particles');
-    if (coreContainer) {
-        coreContainer.innerHTML = '';
-        for (let i = 0; i < 50; i++) {
-            const p = document.createElement('div');
-            p.className = 'particle';
-            // Random sphere points
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos((Math.random() * 2) - 1);
-            const r = 90;
-            const x = r * Math.sin(phi) * Math.cos(theta);
-            const y = r * Math.sin(phi) * Math.sin(theta);
-            const z = r * Math.cos(phi);
-            p.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
-            coreContainer.appendChild(p);
-        }
-    }
-
-    // Core Click -> Marzhan
-    const coreWrapper = document.querySelector('.core-wrapper');
-    const marzhanIndex = dimensions.findIndex(d => d.id === 'marzhan');
-
-    if (coreWrapper) {
-        const newCore = coreWrapper.cloneNode(true);
-        coreWrapper.parentNode.replaceChild(newCore, coreWrapper);
-        newCore.addEventListener('click', () => {
-            if (marzhanIndex !== -1) enterDimension(marzhanIndex);
-        });
-    }
-
-    // Orbit Glyphs
-    const orbitContainer = document.getElementById('orbit-system');
-    if (orbitContainer) {
-        orbitContainer.innerHTML = '';
-        const orbitDims = dimensions.filter(d => d.id !== 'marzhan');
-        const angleStep = 360 / orbitDims.length;
-
-        orbitDims.forEach((dim, i) => {
-            const originalIndex = dimensions.findIndex(d => d.id === dim.id);
-            const wrapper = document.createElement('div');
-            wrapper.className = 'glyph-wrapper';
-
-            const angle = i * angleStep;
-            const radius = 250;
-            wrapper.style.transform = `rotateZ(${angle}deg) translate(${radius}px) rotateZ(-${angle}deg)`;
-
-            const glyph = document.createElement('div');
-            glyph.className = 'glyph';
-            glyph.innerHTML = dim.glyphShape;
-
-            const nameTag = document.createElement('div');
-            nameTag.className = 'glyph-name-hover';
-            nameTag.innerText = dim.title;
-
-            glyph.appendChild(nameTag);
-            wrapper.appendChild(glyph);
-            orbitContainer.appendChild(wrapper);
-
-            if (visitedDimensions.has(dim.id)) wrapper.classList.add('visited');
-
-            wrapper.addEventListener('click', () => {
-                enterDimension(originalIndex);
-            });
-        });
-    }
-}
-
-function enterDimension(index) {
-    const data = dimensions[index];
-    visitedDimensions.add(data.id);
-    updateHubState();
-
-    // Visual Transition
-    document.body.classList.add('warp-active');
-    setTimeout(() => hubContainer.classList.add('hidden'), 200);
-
-    setTimeout(() => {
-        dimView.className = 'dimension-view active ' + data.styleClass;
-        dimImg.classList.remove('loaded');
-        dimImg.style.display = 'none';
-
-        // Update Text
-        dimName.innerText = data.name;
-        dimTitle.innerText = data.title;
-        dimQuote.innerText = `"${data.quote}"`;
-        dimDesc.innerText = data.desc;
-        dimSecret.innerText = data.secret;
-
-        // Load Image
-        dimImg.src = `img/${data.id}.jpg`;
-        dimImg.onload = () => {
-            dimImg.style.display = 'block';
-            setTimeout(() => dimImg.classList.add('loaded'), 10);
-        };
-        dimImg.onerror = () => { dimImg.style.display = 'none'; };
-
-        // Start Visual Toys
-        resizeCanvas();
-        initParticles(data.particleColor || '#ffffff');
-        animateParticles();
-
-        // Enable Parallax
-        document.body.classList.remove('warp-active');
-    }, 800);
-}
-
-function updateHubState() {
-    const orbitContainer = document.getElementById('orbit-system');
-    if (!orbitContainer) return;
-    const wrappers = orbitContainer.children;
-    const orbitDims = dimensions.filter(d => d.id !== 'marzhan');
-
-    for (let i = 0; i < wrappers.length; i++) {
-        if (visitedDimensions.has(orbitDims[i].id)) {
-            wrappers[i].classList.add('visited');
-        }
-    }
-}
-
-function exitDimension() {
-    dimView.classList.remove('active');
-    // Stop expensive animations
-    cancelAnimationFrame(animationId);
-
-    setTimeout(() => {
-        dimView.className = 'dimension-view';
-        dimView.classList.add('hidden');
-        hubContainer.classList.remove('hidden');
-    }, 1000);
-}
-
-// =========================================
-// MINI GAME (Simplified for reliability)
-// =========================================
-let gameActive = false;
-let gameTime = 15.0;
-let playerLane = 1;
-let obstacles = [];
-let gameLoopId, spawnTimer, countdownTimer;
-const LANE_POSITIONS = ['16%', '50%', '84%'];
-
-function startRunnerGame() {
-    introPage.classList.add('hidden');
-    introPage.classList.remove('intro-active');
-    minigamePage.classList.remove('hidden');
-
-    gameActive = true;
-    gameTime = 15.0;
-    playerLane = 1;
-    obstacles = [];
-    document.getElementById('obstacles-container').innerHTML = '';
-    updatePlayerPos();
-
-    gameLoopId = requestAnimationFrame(gameLoop);
-    spawnTimer = setInterval(spawnObstacle, 1000);
-    countdownTimer = setInterval(() => {
-        gameTime -= 0.1;
-        document.getElementById('game-timer').innerText = gameTime.toFixed(2);
-        if (gameTime <= 0) winGame();
-    }, 100);
-
-    document.addEventListener('keydown', handleKeyDown);
-    minigamePage.addEventListener('click', handleTouch);
-}
-
-function handleKeyDown(e) {
-    if (!gameActive) return;
-    if (e.key === 'ArrowLeft' && playerLane > 0) playerLane--;
-    if (e.key === 'ArrowRight' && playerLane < 2) playerLane++;
-    updatePlayerPos();
-}
-
-function handleTouch(e) {
-    if (!gameActive) return;
-    const mid = window.innerWidth / 2;
-    if (e.clientX < mid && playerLane > 0) playerLane--;
-    else if (e.clientX >= mid && playerLane < 2) playerLane++;
-    updatePlayerPos();
-}
-
-function updatePlayerPos() {
-    const p = document.getElementById('player');
-    if (p) p.style.left = LANE_POSITIONS[playerLane];
-}
-
-function spawnObstacle() {
-    if (!gameActive) return;
-    const lane = Math.floor(Math.random() * 3);
-    const obs = document.createElement('div');
-    obs.className = 'obstacle';
-    obs.style.left = LANE_POSITIONS[lane];
-    obs.style.top = '-50px';
-    document.getElementById('obstacles-container').appendChild(obs);
-    obstacles.push({ el: obs, lane: lane, top: -50, speed: 3 + (15 - gameTime) * 0.2 });
-}
+// ... existing code ...
 
 function gameLoop() {
     if (!gameActive) return;
+
+    const player = document.getElementById('player');
+    const playerRect = player ? player.getBoundingClientRect() : null;
+
     for (let i = obstacles.length - 1; i >= 0; i--) {
         let obs = obstacles[i];
         obs.top += obs.speed;
         obs.el.style.top = obs.top + 'px';
 
-        if (obs.top > 320 && obs.top < 380 && obs.lane === playerLane) {
-            // Hit
-            gameTime = Math.min(gameTime + 2.0, 15.0);
-            document.body.style.backgroundColor = 'red';
-            setTimeout(() => document.body.style.backgroundColor = '', 100);
+        // Robust Collision Detection
+        if (playerRect) {
+            const obsRect = obs.el.getBoundingClientRect();
+
+            // Check overlap
+            const overlap = !(playerRect.right < obsRect.left ||
+                playerRect.left > obsRect.right ||
+                playerRect.bottom < obsRect.top ||
+                playerRect.top > obsRect.bottom);
+
+            if (overlap) {
+                // Hit - Penalty
+                gameTime = Math.min(gameTime + 2.0, 15.0);
+                document.body.style.backgroundColor = '#500000'; // Dark red flash
+                setTimeout(() => document.body.style.backgroundColor = '', 100);
+
+                // Remove obstacle to prevent multi-hit
+                obs.el.remove();
+                obstacles.splice(i, 1);
+                continue;
+            }
         }
 
-        if (obs.top > 450) {
+        if (obs.top > window.innerHeight) { // Cleanup off-screen
             obs.el.remove();
             obstacles.splice(i, 1);
         }
