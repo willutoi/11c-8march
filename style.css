@@ -14,14 +14,24 @@
     box-sizing: border-box;
 }
 
+html,
 body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    /* Strict overflow control */
+    position: fixed;
+    /* Prevent rubber-banding on iOS */
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: var(--hub-font);
-    overflow: hidden;
-    height: 100vh;
-    width: 100vw;
+}
+
+body {
     position: relative;
+    /* Reset context */
 }
 
 /* =========================================
@@ -141,9 +151,10 @@ body {
     width: 90vw;
     /* Responsive for mobile */
     max-width: 400px;
-    height: 60vh;
-    /* Taller on mobile */
-    max-height: 500px;
+    height: 500px;
+    /* Fixed height for reliable collision */
+    max-height: 80vh;
+    /* Scaled down for small screens */
     background: rgba(255, 0, 85, 0.1);
     border-left: 2px solid #ff0055;
     border-right: 2px solid #ff0055;
@@ -1007,6 +1018,7 @@ body.warp-active::after {
     text-transform: uppercase;
     background: linear-gradient(to right, #ff4500, #ffcc00);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -1994,5 +2006,39 @@ body.warp-active::after {
     .nav-btn {
         padding: 12px 30px;
         font-size: 1rem;
+    }
+}
+
+/* MOBILE PERFORMANCE OPTIMIZATIONS */
+@media (max-width: 768px) {
+
+    .scanline-overlay,
+    .noise-overlay,
+    .vignette-overlay {
+        display: none !important;
+        /* Disable heavy overlays on mobile */
+    }
+
+    .intro-content,
+    .hub-ui,
+    .dim-text,
+    .toy-instruction,
+    .dim-extra-msg {
+        backdrop-filter: none !important;
+        /* Disable heavy blur */
+        background: rgba(0, 0, 0, 0.85) !important;
+        /* Solid fallback */
+    }
+
+    .scene {
+        transform: scale(0.65);
+        /* Smaller scene to fit */
+    }
+
+    * {
+        text-shadow: none !important;
+        /* Remove text shadows for perf */
+        box-shadow: none !important;
+        /* Remove box shadows */
     }
 }
