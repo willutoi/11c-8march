@@ -37,8 +37,30 @@
         </div>
     </div>
 
-    <!-- MINI-GAME REMOVED PER USER REQUEST -->
-    <!-- Direct access to Hub -->
+    <!-- MINI-GAME: VOID RUNNER 2.0 -->
+    <div id="minigame-page" class="page-container hidden">
+        <div class="game-ui">
+            <h2 class="runner-title" data-text="VOID RUNNER">VOID RUNNER</h2>
+            <div class="runner-timer">SURVIVE: <span id="game-timer">15.00</span>s</div>
+
+            <div class="runner-track">
+                <!-- 3D Grid Floor -->
+                <div class="track-floor"></div>
+                <!-- Player Ship -->
+                <div id="player" class="runner-player"></div>
+                <!-- Obstacles Container -->
+                <div id="obstacles-container"></div>
+            </div>
+
+            <!-- Mobile Touch Zones -->
+            <div class="touch-zone left" id="zone-left"></div>
+            <div class="touch-zone right" id="zone-right"></div>
+
+            <div class="game-controls-hint">
+                TAP LEFT / RIGHT to DASH
+            </div>
+        </div>
+    </div>
 
     <!-- THE HUB: Central Nexus -->
     <div id="hub" class="hub-container hidden">
