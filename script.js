@@ -127,6 +127,7 @@ const dimensions = [
 
 // STATE
 let visitedDimensions = new Set();
+let isSoundOn = false;
 
 // =========================================
 // APP STATE & NAVIGATION
@@ -660,4 +661,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Parallax
     window.addEventListener('deviceorientation', handleParallax);
     window.addEventListener('mousemove', handleParallax);
+
+    // SYSTEM SOUND LOGIC
+    const soundBtn = document.getElementById('sound-btn');
+    const bgMusic = document.getElementById('bg-music');
+
+    if (soundBtn && bgMusic) {
+        soundBtn.addEventListener('click', () => {
+            // Toggle global state
+            isSoundOn = !isSoundOn;
+
+            // Update Icon
+            soundBtn.innerText = isSoundOn ? "🔊" : "🔇";
+            soundBtn.style.color = isSoundOn ? "#00ffcc" : "white";
+            soundBtn.style.borderColor = isSoundOn ? "#00ffcc" : "rgba(255,255,255,0.3)";
+
+            // Play/Pause
+            if (isSoundOn) {
+                bgMusic.volume = 0.5;
+                bgMusic.play().catch(e => console.log("Audio blocked:", e));
+            } else {
+                bgMusic.pause();
+            }
+        });
+    }
 });
