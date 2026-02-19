@@ -136,7 +136,181 @@ body {
     gap: 30px;
 }
 
-/* MINI-GAME REMOVED */
+/* MINI-GAME: VOID RUNNER 2.0 */
+.game-ui {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, #1a001a 0%, #000 80%);
+    position: relative;
+    overflow: hidden;
+}
+
+.runner-title {
+    color: #ff00de;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de;
+    z-index: 10;
+    letter-spacing: 2px;
+}
+
+.runner-timer {
+    font-size: 1.2rem;
+    font-family: monospace;
+    color: #00ffcc;
+    margin-bottom: 20px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 255, 204, 0.3);
+}
+
+/* 3D PERSPECTIVE TRACK */
+.runner-track {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 60vh;
+    border-left: 2px solid rgba(255, 0, 222, 0.3);
+    border-right: 2px solid rgba(255, 0, 222, 0.3);
+    overflow: hidden;
+    perspective: 1000px;
+    /* Deep 3D */
+}
+
+/* Moving Grid Floor */
+.track-floor {
+    position: absolute;
+    top: 50%;
+    left: -50%;
+    width: 200%;
+    height: 100%;
+    background:
+        linear-gradient(transparent 0%, rgba(255, 0, 222, 0.2) 2%, transparent 3%),
+        linear-gradient(90deg, transparent 0%, rgba(255, 0, 222, 0.2) 2%, transparent 3%);
+    background-size: 100% 40px, 40px 100%;
+    transform: rotateX(70deg);
+    transform-origin: 50% 0;
+    animation: grid-run 0.4s linear infinite;
+}
+
+@keyframes grid-run {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 0 40px;
+    }
+}
+
+/* PLAYER SHIP */
+.runner-player {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 40px solid #00ffcc;
+    /* Triangle Ship */
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 10px #00ffcc);
+    transition: left 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Snappy movement */
+    z-index: 20;
+}
+
+.runner-player::after {
+    /* Engine Glow */
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+    background: orange;
+    border-radius: 50%;
+    filter: blur(5px);
+    animation: engine-pulse 0.1s infinite alternate;
+}
+
+@keyframes engine-pulse {
+    from {
+        opacity: 0.8;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+/* OBSTACLES */
+.obstacle {
+    position: absolute;
+    top: -50px;
+    width: 60px;
+    height: 40px;
+    background: #ff0055;
+    box-shadow: 0 0 15px #ff0055;
+    transform: translateX(-50%);
+    z-index: 15;
+    clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+    /* Cyber shape */
+}
+
+/* CONTROLS HINT */
+.game-controls-hint {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 2px;
+    pointer-events: none;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Touch Zones */
+.touch-zone {
+    position: absolute;
+    top: 50%;
+    width: 50%;
+    height: 100%;
+    /* Full height tap */
+    z-index: 5;
+    /* Above track, below UI */
+}
+
+.touch-zone.left {
+    left: 0;
+}
+
+.touch-zone.right {
+    right: 0;
+}
 
 .game-controls-hint {
     margin-top: 20px;
@@ -1752,48 +1926,69 @@ body.warp-active::after {
     box-shadow: 0 0 10px var(--accent);
 }
 
-/* UI PANELS - Cleaner Glass */
+/* UI PANELS - Unified Glass Design */
 .intro-content,
 .hub-ui,
 .toy-instruction,
 .dim-extra-msg {
-    background: rgba(0, 0, 0, 0.6);
-    /* Darker, less washed out */
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    /* Soft shadow boost */
+    background: rgba(10, 10, 15, 0.7);
+    /* Deep dark blue-black tint */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    /* Stronger blur for premium feel */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    /* Deeper shadow */
+    border-radius: 24px;
+    /* More rounded modern look */
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.intro-content {
+    padding: 60px 40px;
+    max-width: 600px;
+    width: 90%;
+}
+
+.hub-ui {
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
 }
 
 .dim-extra-msg {
     display: inline-block;
     padding: 15px 30px;
-    /* Expanded border/padding */
-    border-radius: 50px;
-    margin-top: 20px;
+    margin-top: 30px;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+}
+
+/* TYPOGRAPHY REFINEMENTS */
+.intro-sub,
+.dim-desc,
+.dim-quote {
+    line-height: 1.8;
+    /* Better readability */
+    font-weight: 300;
+    /* Lighter weight for elegance */
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.dim-name {
+    font-weight: 800;
+    /* Bold headers */
+    letter-spacing: -1px;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .dim-text {
-    /* Removed box styling as requested */
+    /* Kept transparent as requested, but with better text shadow */
     background: transparent;
     border: none;
     backdrop-filter: none;
     padding: 0;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-}
-
-.hub-ui {
-    width: 90%;
-    max-width: 400px;
-    padding: 20px;
-    /* Slightly expanded */
-    border-radius: 20px;
-}
-
-.intro-content {
-    border-radius: 20px;
-    padding: 50px;
-    /* Expanded */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
 }
 
 
