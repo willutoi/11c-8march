@@ -242,64 +242,7 @@ function animateParticles() {
     animationId = requestAnimationFrame(animateParticles);
 }
 
-// ... existing code ...
-
-function gameLoop() {
-    if (!gameActive) return;
-
-    const player = document.getElementById('player');
-    const playerRect = player ? player.getBoundingClientRect() : null;
-
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-        let obs = obstacles[i];
-        obs.top += obs.speed;
-        obs.el.style.top = obs.top + 'px';
-
-        // Robust Collision Detection
-        if (playerRect) {
-            const obsRect = obs.el.getBoundingClientRect();
-
-            // Check overlap
-            const overlap = !(playerRect.right < obsRect.left ||
-                playerRect.left > obsRect.right ||
-                playerRect.bottom < obsRect.top ||
-                playerRect.top > obsRect.bottom);
-
-            if (overlap) {
-                // Hit - Penalty
-                gameTime = Math.min(gameTime + 2.0, 15.0);
-                document.body.style.backgroundColor = '#500000'; // Dark red flash
-                setTimeout(() => document.body.style.backgroundColor = '', 100);
-
-                // Remove obstacle to prevent multi-hit
-                obs.el.remove();
-                obstacles.splice(i, 1);
-                continue;
-            }
-        }
-
-        if (obs.top > window.innerHeight) { // Cleanup off-screen
-            obs.el.remove();
-            obstacles.splice(i, 1);
-        }
-    }
-    gameLoopId = requestAnimationFrame(gameLoop);
-}
-
-function winGame() {
-    gameActive = false;
-    clearInterval(spawnTimer);
-    clearInterval(countdownTimer);
-    cancelAnimationFrame(gameLoopId);
-
-    document.querySelector('.runner-title').innerText = "SYSTEM SECURED";
-    document.querySelector('.runner-title').style.color = '#00ffcc';
-
-    setTimeout(() => {
-        minigamePage.classList.add('hidden');
-        hubContainer.classList.remove('hidden');
-    }, 1000);
-}
+// MINI-GAME REMOVED
 
 // =========================================
 // OUTRO & EXTRAS
@@ -363,7 +306,17 @@ document.addEventListener('DOMContentLoaded', () => {
     initHub();
     resizeCanvas();
 
-    startBtn.addEventListener('click', startRunnerGame);
+    // DIRECT ACCESS - GAME REMOVED
+    startBtn.addEventListener('click', () => {
+        introPage.classList.add('hidden');
+        introPage.classList.remove('intro-active');
+        hubContainer.classList.remove('hidden');
+        // Intro music handling if needed
+        const audio = document.getElementById('bg-music');
+        if (audio && isSoundOn) {
+            audio.play().catch(e => console.log("Audio play failed:", e));
+        }
+    });
     toOutroBtn.addEventListener('click', showOutroFromHub);
     dimBackBtn.addEventListener('click', exitDimension);
     restartBtn.addEventListener('click', () => location.reload()); // Simple reboot
