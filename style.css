@@ -2133,35 +2133,51 @@ body.warp-active::after {
 }
 
 /* MOBILE PERFORMANCE OPTIMIZATIONS */
+/* MOBILE PERFORMANCE & LAYOUT OPTIMIZATIONS */
 @media (max-width: 768px) {
 
     .scanline-overlay,
     .noise-overlay,
     .vignette-overlay {
         display: none !important;
-        /* Disable heavy overlays on mobile */
     }
 
+    /* Solid backgrounds for legibility & perf */
     .intro-content,
     .hub-ui,
     .dim-text,
     .toy-instruction,
     .dim-extra-msg {
         backdrop-filter: none !important;
-        /* Disable heavy blur */
         background: rgba(0, 0, 0, 0.85) !important;
-        /* Solid fallback */
     }
 
+    /* Scale scene to fit w/o overflow */
     .scene {
-        transform: scale(0.65);
-        /* Smaller scene to fit */
+        transform: scale(0.55);
+    }
+
+    /* Adjust Hub UI positions */
+    .hub-ui {
+        top: 20px;
+        width: 90%;
+        padding: 15px;
+        font-size: 0.8rem;
+    }
+
+    .hub-title {
+        font-size: 1.2rem;
+    }
+
+    /* Reposition Next Button */
+    .hub-next-btn {
+        bottom: 20px;
+        right: 20px;
+        font-size: 0.9rem;
     }
 
     * {
         text-shadow: none !important;
-        /* Remove text shadows for perf */
         box-shadow: none !important;
-        /* Remove box shadows */
     }
 }
