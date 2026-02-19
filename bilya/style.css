@@ -1,0 +1,1998 @@
+/* =========================================
+   CORE & RESET
+   ========================================= */
+:root {
+    --bg-color: #000000;
+    --text-color: #f0f0f0;
+    --accent: #00ffcc;
+    --hub-font: 'Courier New', monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--hub-font);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+
+/* =========================================
+   PAGES SYSTEM (Intro / Outro)
+   ========================================= */
+.page-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 1s ease;
+}
+
+.page-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+    z-index: -10;
+}
+
+/* INTRO */
+.intro-active {
+    opacity: 1;
+    z-index: 200;
+    /* Top most */
+}
+
+.intro-content {
+    text-align: center;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.glitch-title {
+    font-size: 5rem;
+    font-weight: bold;
+    letter-spacing: 10px;
+    position: relative;
+    color: white;
+    margin-bottom: 20px;
+    animation: glitch-anim 3s infinite;
+}
+
+.intro-sub {
+    font-size: 1.2rem;
+    color: var(--accent);
+    letter-spacing: 5px;
+    margin-bottom: 50px;
+}
+
+.nav-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    padding: 15px 40px;
+    font-family: var(--hub-font);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.nav-btn:hover {
+    background: white;
+    color: black;
+    box-shadow: 0 0 20px white;
+}
+
+/* OUTRO */
+.outro-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+/* MINI-GAME: Void Runner */
+.game-ui {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, #000, #1a001a);
+}
+
+.runner-title {
+    color: #ff0055;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px #ff0055;
+    animation: pulse 1s infinite alternate;
+}
+
+.runner-timer {
+    font-size: 1.5rem;
+    font-family: monospace;
+    color: #fff;
+    margin-bottom: 30px;
+}
+
+.runner-track {
+    position: relative;
+    width: 90vw;
+    /* Responsive for mobile */
+    max-width: 400px;
+    height: 60vh;
+    /* Taller on mobile */
+    max-height: 500px;
+    background: rgba(255, 0, 85, 0.1);
+    border-left: 2px solid #ff0055;
+    border-right: 2px solid #ff0055;
+    overflow: hidden;
+    perspective: 500px;
+}
+
+.track-grid {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    left: -50%;
+    top: 0;
+    background-image:
+        linear-gradient(transparent 95%, rgba(255, 0, 85, 0.5) 95%),
+        linear-gradient(90deg, transparent 95%, rgba(255, 0, 85, 0.5) 95%);
+    background-size: 40px 40px;
+    transform: rotateX(60deg);
+    animation: grid-scroll 0.5s linear infinite;
+}
+
+@keyframes grid-scroll {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 0 40px;
+    }
+}
+
+.runner-player {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    /* Center lane initially */
+    width: 40px;
+    height: 40px;
+    background: #00f0ff;
+    box-shadow: 0 0 20px #00f0ff;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    transform: translateX(-50%);
+    transition: left 0.2s ease-out;
+    z-index: 10;
+}
+
+.obstacle {
+    position: absolute;
+    top: -50px;
+    width: 60px;
+    /* Lane width approx */
+    height: 40px;
+    background: #ff0000;
+    box-shadow: 0 0 15px #ff0000;
+    border: 2px solid white;
+    transform: translateX(-50%);
+    z-index: 5;
+    /* Animation handled in JS for speed control, or CSS for simple falling */
+}
+
+.game-controls-hint {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.typing-effect {
+    font-size: 2rem;
+    color: var(--accent);
+    overflow: hidden;
+    border-right: .15em solid orange;
+    white-space: nowrap;
+    margin: 0 auto;
+    letter-spacing: .15em;
+    animation:
+        typing 3.5s steps(40, end),
+        blink-caret .75s step-end infinite;
+    max-width: fit-content;
+}
+
+.delay-1 {
+    animation-delay: 3s;
+    opacity: 0;
+    animation:
+        fade-in 1s 3.5s forwards,
+        typing 3.5s steps(40, end) 3.5s;
+    /* Delay typing */
+    border-right: none;
+}
+
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+@keyframes blink-caret {
+
+    from,
+    to {
+        border-color: transparent
+    }
+
+    50% {
+        border-color: orange;
+    }
+}
+
+@keyframes fade-in {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes glitch-anim {
+    0% {
+        text-shadow: 2px 2px red, -2px -2px blue;
+    }
+
+    25% {
+        text-shadow: -2px 2px red, 2px -2px blue;
+    }
+
+    50% {
+        text-shadow: 2px -2px red, -2px 2px blue;
+    }
+
+    75% {
+        text-shadow: -2px -2px red, 2px 2px blue;
+    }
+
+    100% {
+        text-shadow: 2px 2px red, -2px -2px blue;
+    }
+}
+
+/* HUB NAVIGATION */
+.hub-next-btn {
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--hub-font);
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.3s;
+    letter-spacing: 2px;
+}
+
+.hub-next-btn:hover {
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent);
+}
+
+.small-btn {
+    font-size: 0.8rem;
+    padding: 10px 20px;
+    opacity: 0.7;
+    margin-top: 50px;
+}
+
+/* =========================================
+   STAR CLUSTER BACKGROUND
+   ========================================= */
+/* Deep space background */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, #1a0b2e 0%, #000000 70%);
+    z-index: -2;
+}
+
+/* Star field using simple noise pattern */
+body::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background-image:
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px);
+    background-size: 50px 50px, 100px 100px;
+    background-position: 0 0, 25px 25px;
+    opacity: 0.3;
+    animation: star-drift 120s linear infinite;
+    z-index: -1;
+    transform-origin: center;
+    transition: transform 0.5s ease;
+}
+
+/* Warp Speed Effect */
+body.warp-active::after {
+    animation: warp-speed 0.5s ease-in forwards;
+    opacity: 0.8;
+}
+
+@keyframes warp-speed {
+    0% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: scale(5);
+        opacity: 0;
+    }
+}
+
+@keyframes star-drift {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================================
+   THE HUB
+   ========================================= */
+.hub-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    /* Depth for 3D */
+    z-index: 10;
+    transition: opacity 1s ease, filter 1s ease;
+}
+
+.hub-container.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    filter: blur(10px);
+}
+
+.hub-ui {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 20;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px 40px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.hub-title {
+    font-size: 1.5rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.hub-subtitle {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-top: 10px;
+}
+
+/* 3D Scene - STABILIZED (No floating) */
+.scene {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    transform-style: preserve-3d;
+    /* Removed animation: scene-float to perfectly align */
+    transform: rotateX(0deg);
+    /* Flat facing user */
+}
+
+/* Core Particles (The central sphere) */
+.core-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150px;
+    /* Slightly smaller to fit nicely */
+    height: 150px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 50;
+    /* Ensure clickable */
+    transition: transform 0.3s ease;
+}
+
+.core-wrapper:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.core-particles {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: core-spin 20s linear infinite;
+}
+
+.particle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 5px #fff, 0 0 10px var(--accent);
+}
+
+@keyframes core-spin {
+    from {
+        transform: rotateY(0deg) rotateX(0deg);
+    }
+
+    to {
+        transform: rotateY(360deg) rotateX(360deg);
+    }
+}
+
+/* Orbit System (Glyphs) */
+.orbit-system {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 500px;
+    /* Precise orbit diameter */
+    height: 500px;
+    transform: translate(-50%, -50%);
+    transform-style: preserve-3d;
+    animation: orbit-spin 60s linear infinite;
+    pointer-events: none;
+    /* Pass events to children */
+}
+
+.orbit-system:hover {
+    animation-play-state: paused;
+}
+
+.orbit-system:hover .glyph {
+    animation-play-state: paused;
+}
+
+@keyframes orbit-spin {
+    from {
+        transform: translate(-50%, -50%) rotateZ(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotateZ(360deg);
+    }
+}
+
+.glyph-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    transform-style: preserve-3d;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto;
+}
+
+.glyph-wrapper:hover {
+    z-index: 100;
+    transform: scale(1.3);
+}
+
+/* Counter-rotate glyphs */
+.glyph {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(2px);
+    transition: all 0.3s ease;
+    animation: counter-spin 60s linear infinite;
+    border-radius: 50%;
+    color: var(--accent);
+}
+
+.glyph-wrapper:hover .glyph {
+    background: var(--accent);
+    color: black;
+    box-shadow: 0 0 30px var(--accent);
+    border-color: white;
+}
+
+@keyframes counter-spin {
+    from {
+        transform: rotateZ(0deg);
+    }
+
+    to {
+        transform: rotateZ(-360deg);
+    }
+}
+
+.glyph-name-hover {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 4px 8px;
+    border: 1px solid #fff;
+    pointer-events: none;
+    border-radius: 2px;
+    z-index: 2000;
+    letter-spacing: 1px;
+}
+
+.glyph-wrapper:hover .glyph-name-hover {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* =========================================
+   DIMENSION VIEW
+   ========================================= */
+/* DIMENSION VIEW CONTAINER */
+.dimension-view {
+    position: fixed;
+    /* Fixed to viewport to cover everything */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    background: transparent;
+    /* Changed from black to see layers */
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease;
+    overflow-y: auto;
+    /* ENABLE SCROLL */
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.dimension-view.active {
+    z-index: 20;
+    opacity: 1;
+    pointer-events: all;
+}
+
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    z-index: 1000;
+    font-family: inherit;
+    text-transform: uppercase;
+    transition: all 0.3s;
+}
+
+.back-btn:hover {
+    background: white;
+    color: black;
+}
+
+.dimension-content {
+    /* Layout */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: start;
+    /* Changed from center to allow scrolling to top/bottom cleanly */
+    align-content: start;
+
+    /* Spacing for Scroll */
+    min-height: 100vh;
+    padding: 100px 50px 100px 50px;
+    /* Reduced padding, using spacer instead */
+    position: relative;
+    z-index: 2;
+}
+
+/* Force bottom space */
+.dimension-content::after {
+    content: '';
+    display: block;
+    grid-column: 1 / -1;
+    height: 200px;
+    /* Guaranteed scroll space */
+    width: 100%;
+}
+
+.img-container {
+    width: 100%;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.img-wrapper {
+    width: 80%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Cyber Frame */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+/* VISITED STATE */
+.glyph-wrapper.visited .glyph {
+    border-color: #333;
+    /* Darker border */
+    color: #555;
+    /* Darker text */
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: none;
+    /* Remove glow */
+    transform: scale(0.9);
+}
+
+.glyph-wrapper.visited .glyph::after {
+    content: '✓';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    color: #00ff00;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.img-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 30px;
+    height: 30px;
+    border-top: 3px solid var(--accent);
+    border-left: 3px solid var(--accent);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.img-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 30px;
+    height: 30px;
+    border-bottom: 3px solid var(--accent);
+    border-right: 3px solid var(--accent);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+/* Extra corners for full frame look */
+.dim-real-img {
+    /* Existing styles */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dim-real-img.loaded {
+    display: block;
+}
+
+.img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    font-size: 1.5rem;
+    border: 1px dashed #333;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.dim-text {
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.dim-name {
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 20px;
+}
+
+.dim-title {
+    font-size: 1.5rem;
+    font-weight: 300;
+    opacity: 0.8;
+    margin-bottom: 40px;
+}
+
+.dim-quote {
+    font-style: italic;
+    line-height: 1.6;
+    max-width: 500px;
+    border-left: 2px solid var(--accent);
+    padding-left: 15px;
+    margin-bottom: 30px;
+}
+
+/* NEW: Extended Details Styles */
+.dim-details {
+    margin-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 30px;
+    /* Animation container */
+}
+
+.dim-desc {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: slide-up-fade 0.8s forwards 0.3s;
+    /* Delay 0.3 */
+}
+
+.dim-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    opacity: 0;
+    animation: zoom-in-fade 0.6s forwards;
+    /* Delay set in JS per item */
+}
+
+.dim-extra-msg {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    opacity: 0;
+    animation: slide-up-fade 0.8s forwards 1s;
+    /* Long delay */
+}
+
+.dim-extra-msg .label {
+    color: var(--accent);
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+@keyframes slide-up-fade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoom-in-fade {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.visual-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* =========================================
+   UNIQUE DIMENSIONS
+   ========================================= */
+
+/* 1. AKBEREN (Resilience) - Deep Cyber */
+.style-akberen {
+    background: #050505;
+    color: #4aff80;
+    font-family: 'Courier New', monospace;
+}
+
+.style-akberen .visual-layer.layer-1 {
+    background:
+        linear-gradient(rgba(0, 20, 0, 0.9), rgba(0, 20, 0, 0.9)),
+        repeating-linear-gradient(0deg, transparent 0, transparent 2px, #001100 2px, #001100 4px);
+    opacity: 0.6;
+    background-size: 100% 4px;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    will-change: opacity;
+    transform: translateZ(0);
+    /* Hardware Accel */
+}
+
+.style-akberen .visual-layer.layer-1::after {
+    /* Slow sweeping light */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(0, 255, 65, 0.05), transparent 60%);
+    animation: scan-pulse 8s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+}
+
+@keyframes scan-pulse {
+    0% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+}
+
+/* Unique Frame: Industrial Heavy */
+.style-akberen .img-wrapper {
+    border: 4px solid #00ff41;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    clip-path: polygon(0 0,
+            100% 0,
+            100% 10%,
+            95% 10%,
+            95% 90%,
+            100% 90%,
+            100% 100%,
+            0 100%,
+            0 90%,
+            5% 90%,
+            5% 10%);
+    padding: 10px;
+    /* Space for the cutouts */
+}
+
+/* 2. D.ALIMA (Impulse) - Kinetic Energy */
+.style-dalima {
+    background: #0a0000;
+    color: #ffaa00;
+    font-family: 'Arial Black', sans-serif;
+}
+
+.style-dalima .visual-layer.layer-1 {
+    /* Smoother speed lines */
+    background: linear-gradient(90deg, #1a0500 0%, #330a00 50%, #1a0500 100%);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.style-dalima .visual-layer.layer-1::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255, 69, 0, 0.05) 20px, rgba(255, 69, 0, 0.05) 40px);
+    animation: slow-pan 20s linear infinite;
+}
+
+@keyframes slow-pan {
+    to {
+        transform: translateX(-50px) translateY(-50px);
+    }
+}
+
+.style-dalima .dim-name {
+    font-size: 5rem;
+    font-style: italic;
+    text-transform: uppercase;
+    background: linear-gradient(to right, #ff4500, #ffcc00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Unique Frame: Slanted Speed */
+.style-dalima .img-wrapper {
+    transform: skewX(-10deg);
+    border: 2px solid #ff4500;
+    box-shadow: 10px 10px 0px rgba(255, 69, 0, 0.5);
+    border-radius: 0;
+}
+
+.style-dalima .dim-real-img {
+    transform: skewX(10deg) scale(1.2);
+    /* Counter skew for image */
+}
+
+/* 3. T.ALIMA (Creativity) - Dreamy Clouds */
+.style-talima {
+    background: #fdfaff;
+    color: #4a4a4a;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.style-talima .visual-layer.layer-1 {
+    background: radial-gradient(circle at 50% 50%, rgba(200, 200, 255, 0.4), transparent 70%);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    animation: breathing 8s ease-in-out infinite alternate;
+}
+
+@keyframes breathing {
+    0% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0.8;
+    }
+}
+
+/* Unique Frame: Organic Blob */
+.style-talima .img-wrapper {
+    border: none;
+    box-shadow: 0 10px 40px rgba(142, 197, 252, 0.6);
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    animation: blob-pulse 8s ease-in-out infinite;
+    overflow: hidden;
+}
+
+@keyframes blob-pulse {
+    0% {
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+
+    50% {
+        border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+    }
+
+    100% {
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+}
+
+/* 4. AIGERIM (Stability) */
+.style-aigerim {
+    background: #e0e0e0;
+    color: #2c3e50;
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.style-aigerim::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    z-index: 0;
+}
+
+.style-aigerim .visual-layer.layer-1 {
+    background: #ffffff;
+    width: 60%;
+    height: 100%;
+    left: 20%;
+    top: 0;
+    position: absolute;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.05);
+}
+
+.style-aigerim .dim-name {
+    font-weight: 700;
+    letter-spacing: -2px;
+    text-transform: uppercase;
+    color: #2c3e50;
+    border-bottom: 4px solid #2c3e50;
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+.style-aigerim .back-btn {
+    border-color: #2c3e50;
+    color: #2c3e50;
+}
+
+.style-aigerim .back-btn:hover {
+    background: #2c3e50;
+    color: #fff;
+}
+
+/* 5. NAZERKE (Control) - Digital Void */
+.style-nazerke {
+    background: #020202;
+    color: #00ff00;
+    font-family: 'Consolas', monospace;
+}
+
+.style-nazerke .visual-layer.layer-1 {
+    /* Subtle grid */
+    background-image:
+        linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+/* Unique Frame: Terminal Window */
+.style-nazerke .img-wrapper {
+    border: 2px solid #00ff00;
+    background: rgba(0, 20, 0, 0.8);
+    box-shadow: 0 0 15px #00ff00;
+    border-radius: 5px;
+}
+
+.style-nazerke .img-wrapper::before {
+    /* Top Bar */
+    content: 'SYSTEM_VIEW // CAM_01';
+    position: absolute;
+    top: -25px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: #00ff00;
+    color: black;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+    font-weight: bold;
+}
+
+
+
+
+
+/* 6. MARIYAM (Movement) - Kinetic Pulse */
+.style-mariyam {
+    background: #10002b;
+    color: #e0aaff;
+    font-family: 'Impact', sans-serif;
+    /* overflow: hidden; REMOVED TO ALLOW SCROLL */
+}
+
+.style-mariyam .visual-layer.layer-1 {
+    background: radial-gradient(circle, transparent 20%, #240046 20%, #240046 40%, transparent 40%, transparent 60%, #3c096c 60%, #3c096c 80%, transparent 80%);
+    background-size: 100px 100px;
+    width: 200%;
+    height: 200%;
+    position: absolute;
+    left: -50%;
+    top: -50%;
+    animation: ripple-spin 20s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes ripple-spin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    50% {
+        transform: rotate(180deg) scale(1.5);
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+/* Unique Frame: Spinning Vinyl/Circle */
+.style-mariyam .img-wrapper {
+    border-radius: 50%;
+    border: 4px dashed #e0aaff;
+    box-shadow: 0 0 50px rgba(224, 170, 255, 0.4);
+    animation: spin-slow 20s linear infinite;
+    /* Image inside spins counter to stay upright if needed, but rotating frame dictates rotating logic.
+       For now, let's keep image static and rotate border only using ::before? 
+       Actually user might like spinning image. Let's keep wrapper static but circular, and rotate border via pseudo */
+    animation: none;
+    position: relative;
+}
+
+.style-mariyam .img-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border: 2px dashed #9d4edd;
+    border-radius: 50%;
+    animation: spin-slow 10s linear infinite;
+    z-index: 10;
+}
+
+@keyframes spin-slow {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.style-mariyam .dim-real-img {
+    border-radius: 50%;
+    /* Cron image to circle */
+}
+
+/* 7. RAUSHAN (Reason) - Pearl White */
+.style-raushan {
+    background: #f8f9fa;
+    color: #333;
+    font-family: 'Times New Roman', serif;
+}
+
+.style-raushan .visual-layer.layer-1 {
+    /* Soft pearlescent sheen */
+    background: conic-gradient(from 45deg, #fff, #f0f0f0, #fff);
+    opacity: 0.5;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.style-raushan .visual-layer.layer-1::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent 40%, rgba(255, 255, 255, 0.8) 50%, transparent 60%);
+    background-size: 200% 100%;
+    animation: shine-pass 5s infinite;
+}
+
+@keyframes shine-pass {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+/* Unique Frame: Diamond / Rhombus */
+.style-raushan .img-wrapper {
+    transform: rotate(45deg) scale(0.7);
+    border: 10px double #333;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.style-raushan .dim-real-img {
+    transform: rotate(-45deg) scale(1.5);
+    /* Counter rotate */
+}
+
+/* 8. ENLIK (Reliability) - Luxury Gold */
+.style-enlik {
+    background: #0f0b00;
+    color: #d4af37;
+    font-family: 'Playfair Display', serif;
+}
+
+.style-enlik .visual-layer.layer-1 {
+    background: radial-gradient(circle at center, #2e2400 0%, #0f0b00 80%);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.style-enlik .visual-layer.layer-1::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(#ffd700 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: sparkle-random 4s infinite;
+    opacity: 0.3;
+}
+
+@keyframes sparkle-random {
+
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Unique Frame: Golden Frame */
+.style-enlik .img-wrapper {
+    border: 4px solid #d4af37;
+    outline: 2px solid #b38728;
+    outline-offset: 5px;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+
+
+/* 9. AYAULYM (SAT) - Deep Red Data */
+.style-ayaulym {
+    background: #100000;
+    color: #ff3333;
+    font-family: 'Courier New', monospace;
+}
+
+.style-ayaulym .visual-layer.layer-1 {
+    background: linear-gradient(to bottom, #200000, #000);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
+    /* SAFETY: Ensure no click blocking */
+}
+
+.style-ayaulym .visual-layer.layer-1::before {
+    content: '1010101010';
+    /* Simplified matrix */
+    font-size: 200px;
+    opacity: 0.05;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    white-space: nowrap;
+}
+
+/* Unique Frame: Glitch Box */
+.style-ayaulym .img-wrapper {
+    border: 2px solid red;
+    box-shadow: 5px 5px 0px darkred;
+    clip-path: polygon(0 0, 100% 0, 100% 80%, 90% 100%, 0 100%);
+}
+
+
+/* 10. INABAT (Mood) - Soft Pastels */
+.style-inabat {
+    background: #fff5f5;
+    color: #666;
+    font-family: 'Brush Script MT', cursive;
+}
+
+.style-inabat .visual-layer.layer-1 {
+    background: linear-gradient(135deg, #fff0f5 0%, #e6e6fa 100%);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+@keyframes color-shift {
+    0% {
+        filter: blur(50px) hue-rotate(0deg);
+    }
+
+    100% {
+        filter: blur(50px) hue-rotate(360deg);
+    }
+}
+
+/* Unique Frame: Polaroid/Card */
+.style-inabat .img-wrapper {
+    background: white;
+    padding: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transform: rotate(3deg);
+    border: none;
+    /* Override default */
+}
+
+.style-inabat .dim-real-img {
+    border: 1px solid #eee;
+}
+
+/* 11. MARZHAN (Aurora) - Enhanced */
+.style-marzhan {
+    background: #001219;
+    color: #94d2bd;
+    font-family: sans-serif;
+}
+
+.style-marzhan .visual-layer.layer-1 {
+    /* Richer gradient */
+    background: linear-gradient(45deg, #0d3b66, #05668d);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    opacity: 0.6;
+    transform: translateZ(0);
+}
+
+.style-marzhan .visual-layer.layer-1::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 2px, transparent 3px);
+    /* Reduced opacity */
+    background-size: 50px 50px;
+    animation: stars-sway 10s ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes stars-sway {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Aurora enhancement: Magical Sparkles */
+.style-marzhan .visual-layer.layer-1::before {
+    /* Changed to ::before to avoid conflict if any */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(white 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    /* Reduced opacity */
+    animation: sparkle-fade 4s infinite alternate;
+    /* Slower */
+}
+
+@keyframes sparkle-fade {
+    0% {
+        opacity: 0.2;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0.6;
+        transform: translateY(-10px);
+    }
+}
+
+.style-raushan .visual-layer.layer-1::after {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.02) 10px, rgba(0, 0, 0, 0.02) 20px);
+    animation: prism-rotate 30s linear infinite;
+}
+
+@keyframes prism-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Unique Frame: Diamond / Rhombus */
+.style-raushan .img-wrapper {
+    transform: rotate(45deg) scale(0.7);
+    border: 10px double #333;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.style-raushan .dim-real-img {
+    transform: rotate(-45deg) scale(1.5);
+    /* Counter rotate */
+}
+
+/* 8. ENLIK (Reliability) - Golden Vault */
+
+
+/* Unique Frame: Polaroid/Card */
+.style-inabat .img-wrapper {
+    background: white;
+    padding: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transform: rotate(3deg);
+    border: none;
+    /* Override default */
+}
+
+.style-inabat .dim-real-img {
+    border: 1px solid #eee;
+}
+
+/* 11. MARZHAN (Aurora) - Kept largely same but refined */
+.style-marzhan {
+    background: #001219;
+    color: #94d2bd;
+    font-family: sans-serif;
+    /* overflow: hidden removed to allow scrolling */
+}
+
+.style-marzhan .visual-layer.layer-1 {
+    background: linear-gradient(45deg, #0a9396, #005f73);
+    opacity: 0.4;
+    filter: blur(50px);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    /* Fixed so it doesn't scroll or cause overflow */
+    top: 0;
+    left: 0;
+    animation: aurora 10s infinite;
+    z-index: 0;
+}
+
+@keyframes aurora {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(20deg);
+    }
+}
+
+
+/* =========================================
+   MOBILE RESPONSIVENESS
+   ========================================= */
+@media (max-width: 768px) {
+    .hub-container {
+        transform: scale(0.65);
+    }
+
+    .orbit-system {
+        width: 350px;
+        height: 350px;
+    }
+
+    .scene {
+        /* On mobile, ensure it stays absolutely fixed in center */
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dimension-content {
+        grid-template-columns: 1fr;
+        padding: 80px 20px;
+        gap: 30px;
+        text-align: center;
+    }
+
+    .img-container {
+        order: 1;
+        height: 300px;
+    }
+
+    .dim-text {
+        order: 2;
+    }
+
+    .dim-name {
+        font-size: 2.5rem;
+    }
+
+    .back-btn {
+        position: fixed;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+    }
+
+    /* Specific overrides for mobile readability */
+    .style-dalima .dim-text,
+    .style-enlik .dim-quote {
+        text-align: center;
+    }
+
+    /* INTRO MOBILE */
+    .glitch-title {
+        font-size: 2.5rem;
+        /* Much smaller */
+        letter-spacing: 2px;
+        word-break: break-all;
+        /* Prevent overflow */
+    }
+
+    .intro-sub {
+        font-size: 0.8rem;
+    }
+
+    /* HUB BUTTON MOBILE */
+    .hub-next-btn {
+        bottom: 20px;
+        right: 50%;
+        transform: translateX(50%);
+        width: 100%;
+        text-align: center;
+        font-size: 0.9rem;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+    }
+
+    /* OUTRO MOBILE */
+    .outro-content {
+        width: 90%;
+    }
+
+    .typing-effect {
+        font-size: 1.2rem;
+        /* Smaller for mobile */
+        white-space: normal;
+        /* Allow wrapping */
+        border-right: none;
+        /* Remove cursor as wrapping breaks it visual */
+        animation: fade-in 2s forwards;
+        /* Simple fade instead of typing for multi-line */
+        text-align: center;
+    }
+
+    .delay-1 {
+        animation-delay: 1s;
+    }
+
+    /* GAME MOBILE */
+    .runner-title {
+        font-size: 1.5rem;
+    }
+
+    .game-controls-hint {
+        font-size: 1rem;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 5px 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+}
+
+/* =========================================
+   NEW VISUAL UPGRADES (REFINED)
+   ========================================= */
+
+/* SCANLINE OVERLAY - Reduced Opacity */
+.scanline-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 0) 50%,
+            rgba(0, 0, 0, 0.1) 50%,
+            rgba(0, 0, 0, 0.1));
+    background-size: 100% 4px;
+    pointer-events: none;
+    opacity: 0.3;
+    /* Much clearer */
+}
+
+/* NOISE OVERLAY */
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 998;
+    pointer-events: none;
+    opacity: 0.03;
+    /* Subtler */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* VIGNETTE OVERLAY */
+.vignette-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 997;
+    background: radial-gradient(circle, transparent 50%, black 150%);
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* GLOBAL UTILITY - HIDDEN */
+.hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: -9999 !important;
+    display: none !important;
+    /* Force remove from flow to prevent spacing issues */
+}
+
+/* SCENE / ORBIT FIXES */
+.scene {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    max-width: 100vw;
+    aspect-ratio: 1 / 1;
+    /* Force Square to prevent oval orbit */
+    transform-style: preserve-3d;
+    transform: rotateX(0deg);
+    margin: 0 auto;
+    /* Center it */
+}
+
+.orbit-system {
+    width: 100%;
+    height: 100%;
+    /* Remove fixed max-width/height to fill the square scene */
+}
+
+/* Ensure Glyphs stay upright and visible */
+.glyph-wrapper {
+    /* ... existing ... */
+}
+
+/* VISITED STATE - Force Visibility */
+.glyph-wrapper.visited .glyph {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0, 255, 204, 0.1);
+    box-shadow: 0 0 15px var(--accent);
+}
+
+.glyph-wrapper.visited .glyph::after {
+    content: '✓';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    color: black;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 102;
+    box-shadow: 0 0 10px var(--accent);
+}
+
+/* UI PANELS - Cleaner Glass */
+.intro-content,
+.hub-ui,
+.toy-instruction,
+.dim-extra-msg {
+    background: rgba(0, 0, 0, 0.6);
+    /* Darker, less washed out */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    /* Soft shadow boost */
+}
+
+.dim-extra-msg {
+    display: inline-block;
+    padding: 15px 30px;
+    /* Expanded border/padding */
+    border-radius: 50px;
+    margin-top: 20px;
+}
+
+.dim-text {
+    /* Removed box styling as requested */
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
+    padding: 0;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.hub-ui {
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    /* Slightly expanded */
+    border-radius: 20px;
+}
+
+.intro-content {
+    border-radius: 20px;
+    padding: 50px;
+    /* Expanded */
+}
+
+.toy-instruction {
+    /* Kept for reference but hidden in HTML now? No, styles remain */
+}
+
+/* SOUND TOGGLE BUTTON */
+.sound-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 1.5rem;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s;
+}
+
+.sound-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+/* CANVAS LAYERS */
+.particle-layer,
+.confetti-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    /* Behind text but above BG */
+    pointer-events: none;
+    /* Let clicks pass through unless explicitly handled */
+}
+
+.confetti-layer {
+    z-index: 2000;
+    /* On top of everything for outro */
+}
+
+/* CORE PULSE ANIMATION */
+.core-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    opacity: 0;
+    animation: shockwave 4s infinite;
+    pointer-events: none;
+    z-index: 49;
+}
+
+@keyframes shockwave {
+    0% {
+        width: 150px;
+        height: 150px;
+        opacity: 0.8;
+        border-width: 2px;
+    }
+
+    100% {
+        width: 400px;
+        height: 400px;
+        opacity: 0;
+        border-width: 0px;
+    }
+}
+
+/* VISUAL TOYS UI */
+.dim-toys {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.toy-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.toy-instruction {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 15px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.toy-icon {
+    font-size: 1.2rem;
+}
+
+/* PARALLAX LAYER */
+.parallax-layer {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    z-index: 0;
+    /* Deep background */
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    transition: transform 0.1s linear;
+    /* Smooth gyro */
+    pointer-events: none;
+}
+
+/* MOBILE ORBIT ADJUSTMENT */
+@media (max-width: 768px) {
+    .scene {
+        transform: scale(0.8);
+        /* Scale down entire scene for mobile */
+    }
+
+    .orbit-system {
+        width: 100%;
+        height: 100%;
+    }
+
+    .nav-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+}
