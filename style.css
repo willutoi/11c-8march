@@ -547,6 +547,8 @@ body.warp-active::after {
     /* Removed animation: scene-float to perfectly align */
     transform: rotateX(0deg);
     /* Flat facing user */
+    pointer-events: none;
+    /* Prevent blocking buttons */
 }
 
 /* Core Particles (The central sphere) */
@@ -562,6 +564,7 @@ body.warp-active::after {
     cursor: pointer;
     z-index: 50;
     /* Ensure clickable */
+    pointer-events: auto;
     transition: transform 0.3s ease;
 }
 
@@ -2174,6 +2177,8 @@ body.warp-active::after {
         bottom: 20px;
         right: 20px;
         font-size: 0.9rem;
+        pointer-events: auto !important;
+        z-index: 1000 !important;
     }
 
     * {
