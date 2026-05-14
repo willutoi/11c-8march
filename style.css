@@ -501,7 +501,7 @@ body.warp-active::after {
    THE HUB
    ========================================= */
 .hub-container {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -509,10 +509,10 @@ body.warp-active::after {
     display: flex;
     justify-content: center;
     align-items: center;
-    perspective: 1000px;
-    /* Depth for 3D */
+    perspective: 1200px;
     z-index: 10;
-    transition: opacity 1s ease, filter 1s ease;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #000 70%);
+    overflow: hidden;
 }
 
 .hub-container.fade-out {
@@ -552,14 +552,13 @@ body.warp-active::after {
 /* 3D Scene - STABILIZED (No floating) */
 .scene {
     position: relative;
-    width: 600px;
-    height: 600px;
+    width: 620px;
+    height: 620px;
+    max-width: 92vw;
+    max-height: 92vh;
     transform-style: preserve-3d;
-    /* Removed animation: scene-float to perfectly align */
-    transform: rotateX(0deg);
-    /* Flat facing user */
     pointer-events: none;
-    /* Prevent blocking buttons */
+    margin: 0 auto;
 }
 
 /* Core Particles (The central sphere) */
@@ -567,16 +566,10 @@ body.warp-active::after {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 150px;
-    /* Slightly smaller to fit nicely */
-    height: 150px;
+    width: 140px;
+    height: 140px;
     transform: translate(-50%, -50%);
-    border-radius: 50%;
-    cursor: pointer;
     z-index: 50;
-    /* Ensure clickable */
-    pointer-events: auto;
-    transition: transform 0.3s ease;
 }
 
 .core-wrapper:hover {
@@ -617,14 +610,12 @@ body.warp-active::after {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 500px;
-    /* Precise orbit diameter */
-    height: 500px;
+    width: 520px;
+    height: 520px;
     transform: translate(-50%, -50%);
     transform-style: preserve-3d;
-    animation: orbit-spin 60s linear infinite;
+    animation: orbit-spin 50s linear infinite;
     pointer-events: none;
-    /* Pass events to children */
 }
 
 .orbit-system:hover {
